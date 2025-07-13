@@ -59,9 +59,9 @@ const UserProfile = () => {
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
-    } else if (role === 'admin') {
-      navigate('/adminDashboard/my-profile');
-   
+    } else if (role === 'user') {
+      navigate('/userDashboard/my-profile');
+
     //  } else if (role !== 'admin') {
     //   navigate('/dashboard/my-profile');
     }

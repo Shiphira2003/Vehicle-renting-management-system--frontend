@@ -12,7 +12,7 @@ const UserPayments = () => {
 
   const userPayments = React.useMemo(() => {
     if (!allPayments || !userId) return [];
-    return allPayments.filter((payment: PaymentDetails) => payment.booking?.userId === userId);
+    return allPayments.filter((payment: PaymentDetails) => payment.booking && (payment.booking as any).userId === userId);
   }, [allPayments, userId]);
 
   if (!userId) {
@@ -52,7 +52,7 @@ const UserPayments = () => {
                 <td className="p-4">{payment.bookingId}</td>
                 <td className="p-4">${payment.amount.toFixed(2)}</td>
                 <td className="p-4">{payment.paymentMethod}</td>
-                <td className="p-4">{payment.status}</td>
+                <td className="p-4">{payment.paymentStatus}</td>
                 <td className="p-4">{new Date(payment.paymentDate).toLocaleDateString()}</td>
               </tr>
             ))}

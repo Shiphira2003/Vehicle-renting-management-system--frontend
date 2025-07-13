@@ -21,6 +21,7 @@ import AllVehicles from "./components/adminDashboard/AllVehicles"
 import UserBookings from "./components/dashboard/Bookings"
 import UserPayments from "./components/dashboard/Payments"
 import UserTickets from "./components/dashboard/Tickets"
+import Analytics from "./components/adminDashboard/Analytics"
 
 function App() {
   const router = createBrowserRouter([
@@ -86,10 +87,10 @@ function App() {
       ),
       errorElement: <Error />,
       children: [
-        // {
-        //   path: "analytics",
-        //   element: <Analytics />,
-        // },
+        {
+          path: "analytics",
+          element: <Analytics />,
+        },
         {
           path: "allbookings",
           element: <AllBookings />,

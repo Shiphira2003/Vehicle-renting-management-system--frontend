@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 
 import loginImg from "../../src/assets/register.jpg";
@@ -8,9 +8,12 @@ import { useNavigate } from 'react-router-dom';
 import { Toaster, toast } from "sonner";
 import { Navbar } from "../components/Navbar";
 
+// Updated type definition to include phone and address
 type RegisterFormData = {
   firstName: string;
   lastName: string;
+  phone: string; // Added phone field
+  address: string; // Added address field
   email: string;
   password: string;
 };
@@ -18,14 +21,14 @@ type RegisterFormData = {
 
 export const Register = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>();
-const [registerUser, { isLoading}] = userApi.useRegisterUserMutation();
-console.log(registerUser)
-const navigate = useNavigate();
+  const [registerUser, { isLoading}] = userApi.useRegisterUserMutation();
+  console.log(registerUser)
+  const navigate = useNavigate();
 
   // Show toast notification on successful registration
   const onSubmit = async (data: RegisterFormData) => {
-     const loadingToastId = toast.loading("Creating Account...");
-   console.log(data)
+    const loadingToastId = toast.loading("Creating Account...");
+    console.log(data) // Log the data to see the new fields
     try {
       const res = await registerUser(data).unwrap();
       console.log(res);
@@ -40,13 +43,13 @@ const navigate = useNavigate();
   };
   return (
     <>
-     <Toaster
+      <Toaster
         richColors
         position="top-right"
       />
       <Navbar/>
-       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100 flex items-center justify-center py-10 px-4 sm:px-6 lg:px-20">
-       <div className="grid sm:grid-cols-2 gap-10 bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden w-full max-w-4xl lg:max-w-6xl"> 
+        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100 flex items-center justify-center py-10 px-4 sm:px-6 lg:px-20">
+        <div className="grid sm:grid-cols-2 gap-10 bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden w-full max-w-4xl lg:max-w-6xl">
           {/* Form Section */}
           <div className="flex items-center justify-center p-8">
             <form className="w-full max-w-md space-y-6 bg-white rounded-2xl  p-8" onSubmit={handleSubmit(onSubmit)}>
@@ -60,17 +63,16 @@ const navigate = useNavigate();
                     className="text-sm font-medium leading-none text-black peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     htmlFor="first_name"
                   >
-                    First
+                    First Name
                   </label>
                   <input
-                    // ONLY CHANGE HERE: Added text-gray-900 to ensure input text is visible
                     className="flex h-10 w-full rounded-md border  bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-300  dark:focus:ring-gray-400 dark:focus:ring-offset-gray-900 text-gray-900"
                     type="text"
                     id="first_name"
                     placeholder="First Name"
                     {...register("firstName", { required: true})}
                   />
-                  {errors.firstName && <span className="text-red delay-500">First Name is Required</span>}
+                  {errors.firstName && <span className="text-red-500 text-sm">First Name is Required</span>}
                 </div>
                 <div className="grid w-full  items-center gap-1.5">
                   <label
@@ -84,11 +86,43 @@ const navigate = useNavigate();
                     type="text"
                     id="last_name"
                     placeholder="Last Name"
-                     {...register("lastName", { required: true })}
+                      {...register("lastName", { required: true })}
                   />
-                  {errors.lastName && <span className="text-red delay-500">Last Name is Required</span>}
+                  {errors.lastName && <span className="text-red-500 text-sm">Last Name is Required</span>}
                 </div>
               </div>
+
+              {/* Added Phone Field - now styled like Email */}
+              <label
+                className="text-sm font-medium leading-none text-black peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                htmlFor="phone"
+              >
+                Phone
+              </label>
+              <input
+                className="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-300 dark:focus:ring-gray-400 dark:focus:ring-offset-gray-900 text-gray-900"
+                type="text"
+                id="phone"
+                placeholder="Phone Number"
+                {...register("phone", { required: true, pattern: /^[0-9]+$/ })} // Added pattern for numbers only
+              />
+              {errors.phone && <span className="text-red-500 text-sm">Valid Phone Number is Required</span>}
+
+              {/* Added Address Field - now styled like Email */}
+              <label
+                className="text-sm font-medium leading-none text-black peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                htmlFor="address"
+              >
+                Address
+              </label>
+              <input
+                className="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-300 dark:focus:ring-gray-400 dark:focus:ring-offset-gray-900 text-gray-900"
+                type="text"
+                id="address"
+                placeholder="Address"
+                {...register("address", { required: true })}
+              />
+              {errors.address && <span className="text-red-500 text-sm">Address is Required</span>}
 
               <label
                 className="text-sm font-medium leading-none text-black peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -97,14 +131,13 @@ const navigate = useNavigate();
                 Email
               </label>
               <input
-                // ONLY CHANGE HERE: Added text-gray-900 to ensure input text is visible
                 className="flex h-10 w-full rounded-md border  bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-300  dark:focus:ring-gray-400 dark:focus:ring-offset-gray-900 text-gray-900"
                 type="email"
                 id="email"
                 placeholder="Email"
                 {...register("email", { required: true })}
               />
-              {errors.email && <span className="text-red delay-500">Email is Required</span>}
+              {errors.email && <span className="text-red-500 text-sm">Email is Required</span>}
               <label
                 className="text-sm font-medium leading-none text-black peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 htmlFor="password"
@@ -112,19 +145,19 @@ const navigate = useNavigate();
                 Password
               </label>
               <input
-                // ONLY CHANGE HERE: Added text-gray-900 to ensure input text is visible
+
                 className="flex h-10 w-full rounded-md border  bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-300  dark:focus:ring-gray-400 dark:focus:ring-offset-gray-900 text-gray-900"
                 type="password"
                 id="password"
                 placeholder="Password"
                 {...register("password", { required: true })}
               />
-              {errors.password && <span className="text-red delay-500">Password is Required</span>}
+              {errors.password && <span className="text-red-500 text-sm">Password is Required</span>}
               <button type="submit" className="btn btn-s btn-circle btn-block mt-4 shadow-md hover:scale-105 transition-transform">
                 Register
               </button>
-              <div className="flex text-center mt-4 justify-center flex-wrap gap-y-2"> {/* Added justify-center and flex-wrap for better centering and responsiveness */}
-    <Link to="/" className="text-blue-500 hover:underline flex items-center justify-center gap-1 mr-4"> {/* Added mr-4 for space */}
+              <div className="flex text-center mt-4 justify-center flex-wrap gap-y-2">
+    <Link to="/" className="text-blue-500 hover:underline flex items-center justify-center gap-1 mr-4">
         <span role="img" aria-label="home">🏡</span> Go to HomePage
     </Link>
     <Link to="/login" className="text-green-500 hover:underline flex items-center justify-center gap-1">
