@@ -157,7 +157,7 @@ export const Navbar = () => {
                         </button>
                         <ul tabIndex={0} className="dropdown-content bg-white rounded-box z-[1] mt-3 w-52 p-2 shadow">
                             {
-                                user.userType === 'admin' ? (
+                                user && user.role === 'admin' ? (
                                     <li>
                                         <Link
                                             to="/admindashboard/analytics"

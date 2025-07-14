@@ -1,6 +1,7 @@
 // src/types/PaymentDetails.ts
 
 export interface PaymentDetails {
+  userId: number;
   paymentId: number;
   bookingId: number;
   amount: number;

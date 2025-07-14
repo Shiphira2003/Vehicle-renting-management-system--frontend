@@ -98,14 +98,14 @@ export const AllTickets = () => {
         <table className="table w-full text-left">
           <thead>
             <tr>
-              <th className="p-4">Ticket ID</th>
-              <th className="p-4">Subject</th>
-              <th className="p-4">Description</th>
-              <th className="p-4">Status</th>
-              <th className="p-4">Created By</th>
-              <th className="p-4">Created At</th>
-              <th className="p-4">Last Updated</th>
-              <th className="p-4">Actions</th>
+              <th className="p-4 text-black">Ticket ID</th>
+              <th className="p-4 text-black">Subject</th>
+              <th className="p-4 text-black">Description</th>
+              <th className="p-4 text-black">Status</th>
+              <th className="p-4 text-black">Created By</th>
+              <th className="p-4 text-black">Created At</th> text-black
+              <th className="p-4 text-black">Last Updated</th>
+              <th className="p-4 text-black">Actions</th>
             </tr>
           </thead>
           <tbody>

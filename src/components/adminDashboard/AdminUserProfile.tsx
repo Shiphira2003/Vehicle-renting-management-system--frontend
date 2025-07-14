@@ -31,7 +31,7 @@ const AdminUserProfile = () => {
       lastName: user?.lastName || '',
       email: user?.email || '',
       address: user?.address || '',
-      contact: user?.contact || '', 
+      contact: user?.contactNo || '', 
     }
   });
 
@@ -55,19 +55,19 @@ const AdminUserProfile = () => {
         lastName: user.lastName,
         email: user.email,
         address: user.address || '',
-        contact: user.contact || '',
+        contact: user.contactNo || '',
       });
     }
   };
 
-  useEffect(() => {
-    // user must exist and be authenticated
-    if (!isAuthenticated || !user) {
-      navigate('/login');
-    } else if (role !== 'admin') {
-      navigate('/login'); // Redirect if not an admin
-    }
-  }, [isAuthenticated, user, role, navigate]);
+  // useEffect(() => {
+  //   // user must exist and be authenticated
+  //   if (!isAuthenticated || !user) {
+  //     navigate('/login');
+  //   } else if (role !== 'admin') {
+  //     navigate('/login'); // Redirect if not an admin
+  //   }
+  // }, [isAuthenticated, user, role, navigate]);
 
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -109,22 +109,7 @@ const AdminUserProfile = () => {
           return;
         }
 
-        // --- Important: This section requires backend implementation for file upload ---
-        // Your `updateUserProfileImage` mutation takes `{ userId: number; profileUrl: string }`.
-        // This implies your backend expects the URL directly after the image is hosted.
-        // You'll likely need a separate file upload endpoint that returns a URL.
-        // Example:
-        // const formData = new FormData();
-        // formData.append('profileImage', file);
-        // const uploadResponse = await fetch('http://localhost:8000/api/upload-profile-image', {
-        //   method: 'POST',
-        //   body: formData,
-        // });
-        // if (!uploadResponse.ok) {
-        //   throw new Error('Image upload failed');
-        // }
-        // const uploadData = await uploadResponse.json();
-        // const newProfileUrl = uploadData.url; // Get the URL from your backend's response
+        
 
         const temporaryProfileUrl = URL.createObjectURL(file); // For immediate visual feedback
 
@@ -132,9 +117,7 @@ const AdminUserProfile = () => {
         await updateProfileImage({ userId: userId, profileUrl: temporaryProfileUrl }).unwrap();
 
         Swal.fire('Success!', 'Profile image updated successfully!', 'success');
-        // If your auth slice updates Redux state with user profile changes,
-        // you might want to dispatch an action here to update the user's profileUrl in the store.
-        // e.g., dispatch(setCredentials({ ...user, profileUrl: newProfileUrl }));
+       
       } catch (error: any) {
         console.error('Failed to update profile image:', error);
         Swal.fire('Error!', error?.data?.message || 'Failed to upload image. Please try again.', 'error');
@@ -188,19 +171,19 @@ const AdminUserProfile = () => {
           <div className="bg-gradient-to-r from-accentPink to-accentPinkDark rounded-lg p-4">
             <h3 className="text-2xl font-bold mb-3">Personal Information</h3>
             <p className="mb-2">
-              <span className="font-bold">First Name:</span> {user?.firstName || 'N/A'}
+              <span className="font-bold text-black">First Name:</span> {user?.firstName || 'N/A'}
             </p>
             <p className="mb-2">
-              <span className="font-bold">Last Name:</span> {user?.lastName || 'N/A'}
+              <span className="font-bold text-black">Last Name:</span> {user?.lastName || 'N/A'}
             </p>
             <p className="mb-2">
-              <span className="font-bold">Email:</span> {user?.email || 'N/A'}
+              <span className="font-bold text-black">Email:</span> {user?.email || 'N/A'}
             </p>
             <p className="mb-2">
-              <span className="font-bold">Contact:</span> {user?.contact || 'N/A'}
+              <span className="font-bold text-black">Contact:</span> {user?.contactNo || 'N/A'}
             </p>
             <p className="mb-2">
-              <span className="font-bold">Address:</span> {user?.address || 'N/A'}
+              <span className="font-bold text-black">Address:</span> {user?.address || 'N/A'}
             </p>
           </div>
           {/* Security Settings Card */}
@@ -276,7 +259,7 @@ const AdminUserProfile = () => {
                   type="text"
                   id="contact"
                   className="input input-bordered w-full text-white bg-darkGray border-lightTextGray placeholder-lightTextGray"
-                  defaultValue={user?.contact}
+                  defaultValue={user?.contactNo}
                   {...register('contact')}
                   disabled={isUpdatingProfile}
                 />

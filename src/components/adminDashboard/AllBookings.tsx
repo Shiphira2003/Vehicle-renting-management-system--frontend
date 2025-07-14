@@ -82,14 +82,14 @@ export const AllBookings = () => {
                 <table className="table w-full text-left">
                     <thead>
                         <tr>
-                            <th className="p-4">Booking ID</th>
-                            <th className="p-4">Vehicle</th>
-                            <th className="p-4">Rental Rate</th>
-                            <th className="p-4">Booked By</th>
-                            <th className="p-4">Booking Dates</th>
-                            <th className="p-4">Total Amount</th>
-                            <th className="p-4">Status</th>
-                            <th className="p-4">Actions</th>
+                            <th className="p-4 text-black">Booking ID</th>
+                            <th className="p-4 text-black">Vehicle</th>
+                            <th className="p-4 text-black">Rental Rate</th>
+                            <th className="p-4 text-black">Booked By</th>
+                            <th className="p-4 text-black">Booking Dates</th>
+                            <th className="p-4 text-black">Total Amount</th>
+                            <th className="p-4 text-black">Status</th>
+                            <th className="p-4 text-black">Actions</th>
                         </tr>
                     </thead>
                     <tbody>

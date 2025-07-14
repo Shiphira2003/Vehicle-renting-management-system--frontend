@@ -1,4 +1,4 @@
-// src/pages/Analytics.tsx (or src/components/AdminDashboard.tsx)
+// src/pages/Analytics.tsx
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { PuffLoader } from "react-spinners";
@@ -9,9 +9,8 @@ import { bookingsApi } from "../../features/api/bookingsApi";
 import { paymentsApi } from "../../features/api/paymentsApi";
 import { ticketsApi } from "../../features/api/ticketsApi";
 import { userApi } from "../../features/api/userApi";
-import { useGetAllVehiclesQuery } from '../../features/api/vehiclesApi'; // Adjusted import name
+import { useGetAllVehiclesQuery } from '../../features/api/vehiclesApi';
 
-// Helper function to get badge class (can be moved to a utils file if shared)
 const getStatusBadgeClass = (status: string) => {
     switch (status) {
         case "Confirmed":
@@ -21,7 +20,7 @@ const getStatusBadgeClass = (status: string) => {
         case "Available":
             return "bg-green-100 text-green-800";
         case "Pending":
-        case "member":
+        case "user":
             return "bg-yellow-100 text-yellow-800";
         case "Cancelled":
         case "Failed":
@@ -39,13 +38,14 @@ const getStatusBadgeClass = (status: string) => {
 export const Analytics = () => {
     const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
-    // Fetch data for summaries (using existing hooks, possibly with 'selectFromResult' for optimization)
+    // Fetch data for summaries
     const { data: bookingsData = [], isLoading: bookingsLoading, error: bookingsError } = bookingsApi.useGetAllBookingsQuery(undefined, { skip: !isAuthenticated });
     const { data: paymentsData = [], isLoading: paymentsLoading, error: paymentsError } = paymentsApi.useGetAllPaymentsQuery(undefined, { skip: !isAuthenticated });
     const { data: ticketsData = [], isLoading: ticketsLoading, error: ticketsError } = ticketsApi.useGetAllTicketsQuery(undefined, { skip: !isAuthenticated });
     const { data: usersData = [], isLoading: usersLoading, error: usersError } = userApi.useGetAllUsersProfilesQuery(undefined, { skip: !isAuthenticated });
     const { data: vehiclesData = [], isLoading: vehiclesLoading, error: vehiclesError } = useGetAllVehiclesQuery(undefined, { skip: !isAuthenticated });
 
+    // Calculations with proper type safety
     const totalBookings = bookingsData.length;
     const pendingBookings = bookingsData.filter(b => b.bookingStatus === "Pending").length;
     const confirmedBookings = bookingsData.filter(b => b.bookingStatus === "Confirmed").length;
@@ -53,18 +53,21 @@ export const Analytics = () => {
     const totalPayments = paymentsData.length;
     const completedPayments = paymentsData.filter(p => p.paymentStatus === "Completed").length;
     const pendingPayments = paymentsData.filter(p => p.paymentStatus === "Pending").length;
-    const totalRevenue = paymentsData.reduce((sum, p) => sum + p.amount, 0);
+    
+    // Safe totalRevenue calculation
+    const totalRevenue = paymentsData.reduce((sum, p) => {
+        const amount = typeof p.amount === 'string' ? parseFloat(p.amount) : p.amount;
+        return sum + (Number.isFinite(amount) ? amount : 0);
+    }, 0);
 
     const totalTickets = ticketsData.length;
     const openTickets = ticketsData.filter(t => t.status === "Open" || t.status === "Pending").length;
     const closedTickets = ticketsData.filter(t => t.status === "Closed").length;
 
-    // Define a User type if not already defined
     type User = { role: string; [key: string]: any };
-
     const totalUsers = usersData.length;
     const adminUsers = usersData.filter((u: User) => u.role === "admin").length;
-    const memberUsers = usersData.filter((u: User) => u.role === "member").length;
+    const users = usersData.filter((u: User) => u.role === "user").length;
     const disabledUsers = usersData.filter((u: User) => u.role === "disabled").length;
 
     const totalVehicles = vehiclesData.length;
@@ -89,10 +92,6 @@ export const Analytics = () => {
             <div className="text-center py-10 text-red-600 bg-white rounded-lg shadow-md m-4">
                 <h2 className="text-2xl font-bold mb-4">Error Loading Data</h2>
                 <p>There was an issue fetching some dashboard statistics. Please try again later.</p>
-                {/* You might want to display specific error messages for debugging */}
-                {/* {bookingsError && <p>Bookings Error: {JSON.stringify(bookingsError)}</p>} */}
-                {/* {paymentsError && <p>Payments Error: {JSON.stringify(paymentsError)}</p>} */}
-                {/* etc. */}
             </div>
         );
     }
@@ -123,7 +122,7 @@ export const Analytics = () => {
                 {/* Payments Card */}
                 <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
                     <h2 className="text-xl font-semibold text-green-600 mb-4">Payments</h2>
-                    <p className="text-3xl font-bold text-gray-900 mb-2">Ksh {totalRevenue.toFixed(2)}</p>
+                    <p className="text-3xl font-bold text-gray-900 mb-2">Ksh {Number(totalRevenue).toFixed(2)}</p>
                     <p className="text-gray-600">Total Revenue</p>
                     <div className="mt-4 text-sm">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getStatusBadgeClass("Completed")}`}>
@@ -162,7 +161,7 @@ export const Analytics = () => {
                             Admins: {adminUsers}
                         </span>
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass("member")}`}>
-                            Members: {memberUsers}
+                            Users: {users}
                         </span>
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${getStatusBadgeClass("disabled")}`}>
                             Disabled: {disabledUsers}
@@ -188,14 +187,14 @@ export const Analytics = () => {
                 </div>
             </div>
 
-            {/* You can add more sections here, e.g., charts for trends */}
+            {/* Quick Insights section */}
             <section className="mt-10">
                 <h2 className="text-2xl font-bold text-center text-indigo-700 mb-6">Quick Insights</h2>
                 <div className="bg-white p-8 rounded-lg shadow-lg">
                     <h3 className="text-xl font-semibold text-gray-800 mb-4">Overall System Health</h3>
                     <ul className="list-disc list-inside text-gray-700 space-y-2">
                         <li>There are <span className="font-bold text-blue-600">{totalBookings}</span> total bookings in the system, with <span className="font-bold text-yellow-600">{pendingBookings}</span> currently pending confirmation.</li>
-                        <li>Total revenue generated from <span className="font-bold text-green-600">{totalPayments}</span> payments is <span className="font-bold text-green-600">Ksh {totalRevenue.toFixed(2)}</span>.</li>
+                        <li>Total revenue generated from <span className="font-bold text-green-600">{totalPayments}</span> payments is <span className="font-bold text-green-600">Ksh {Number(totalRevenue).toFixed(2)}</span>.</li>
                         <li>Out of <span className="font-bold text-purple-600">{totalTickets}</span> support tickets, <span className="font-bold text-blue-600">{openTickets}</span> are still open or pending resolution.</li>
                         <li>The platform has <span className="font-bold text-orange-600">{totalUsers}</span> registered users, including <span className="font-bold text-green-600">{adminUsers}</span> administrators.</li>
                         <li>Currently, <span className="font-bold text-teal-600">{availableVehicles}</span> out of <span className="font-bold text-gray-900">{totalVehicles}</span> vehicles are available for rent.</li>

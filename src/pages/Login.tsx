@@ -7,6 +7,8 @@ import { userApi } from "../features/api/userApi";
 import { FaSignInAlt } from "react-icons/fa"
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../features/auth/authSlice";
+import Footer from "../components/Footer";
+import { Navbar } from "../components/Navbar";
 
 type UserLoginFormValues = {
   email: string;
@@ -26,7 +28,12 @@ export const Login = () => {
       // console.log(res)
         toast.success(res?.message, { id: loadingToastId })
         dispatch(setCredentials(res))
-        navigate("/dashboard")
+        // navigate("/dashboard")
+        if (res.role === "admin") {
+          navigate("/admindashboard");
+        } else {
+          navigate("/dashboard");
+        }
     } catch (err: any) {
       toast.error('Failed to Login: ' + (err.data?.message || err.message || err.error || err));
       toast.dismiss(loadingToastId)
@@ -36,6 +43,7 @@ export const Login = () => {
 
     return (
         <>
+        <Navbar/>
             <Toaster
                 richColors
                 position="top-right"
@@ -99,6 +107,7 @@ export const Login = () => {
                 </div>
             </div>
             <hr className="mt-6" />
+            <Footer/>
         </>
     )
 }

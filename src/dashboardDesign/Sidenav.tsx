@@ -1,20 +1,20 @@
-import { SquareUserRound, LogOut, Home, Car, DollarSign, Ticket } from "lucide-react" // Added Home, Car (for bookings - conceptual), DollarSign, Ticket
+import { SquareUserRound, LogOut, Home, Car, DollarSign, Ticket } from "lucide-react" 
 import { Link } from "react-router-dom"
 
 export const SideNav =()=> {
     return (
-        <ul className="menu bg-gray-300 text-dark-300 shadow-lg min-w-full gap-2 text-base-content min-h-full p-4"> {/* Added p-4 for consistent padding */}
+        <ul className="menu bg-gray-300 text-dark-300 shadow-lg min-w-full gap-2 text-base-content min-h-full p-4"> 
             {/* My Profile */}
             <li>
                 <Link to="me" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-400">
-                    <SquareUserRound className="text-orange-600 w-5 h-5"/> {/* Icon for My Profile, using your theme's orange accent */}
-                    <span className="text-gray-800 text-lg">My Profile</span> {/* Text color and size adjusted */}
+                    <SquareUserRound className="text-orange-600 w-5 h-5"/> 
+                    <span className="text-gray-800 text-lg">My Profile</span> 
                 </Link>
             </li>
             {/* Booking */}
             <li>
                 <Link to="bookings" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-400">
-                    <Car className="text-orange-600 w-5 h-5"/> {/* Changed to Car icon for Bookings (can also use 'CalendarDays' or 'ClipboardList') */}
+                    <Car className="text-orange-600 w-5 h-5"/> 
                     <span className="text-gray-800 text-lg">Booking</span>
                 </Link>
             </li>

@@ -1,140 +1,78 @@
 import { Link } from 'react-router-dom';
-import { FaCar, FaChair, FaGasPump, FaCogs } from 'react-icons/fa'; 
-import { useState } from 'react';
+import { FaCar, FaChair, FaGasPump, FaCogs } from 'react-icons/fa'; // FaCogs is still here as per your original code
+import { useState, useMemo } from 'react';
+import { useGetAllVehiclesQuery } from '../../features/api/vehiclesApi'; // Import the RTK Query hook
+import  type{ Vehicle } from '../../types/vehicleDetails'; // Import the correct Vehicle interface from your types file
 
-import mercedesImg from '../../assets/mercedes .jpg'; 
-import jeepWranglerImg from '../../assets/jeep.jpg'; 
-import toyotaCamryImg from '../../assets/toyota.jpg';   
-import hondaCRVImg from '../../assets/brabus.jpg';         
-import nissanFrontierImg from '../../assets/range.jpg'; 
-import teslaModel3Img from '../../assets/Tesla.jpg';  
-import busImg from '../../assets/bus.jpg';
-import pinkieImg from '../../assets/pinkie.jpg';
-
-
-
-interface Vehicle {
-    id: string;
-    name: string;
-    model: string;
-    type: string; // e.g., 'SUV', 'Sedan'
-    seats: number;
-    transmission: 'Automatic' | 'Manual';
-    fuelType: 'Petrol' | 'Diesel' | 'Electric';
-    dailyRate: number;
- 
-    shortDescription: string;
-    image: string; 
-}
-
-const mockVehicles: Vehicle[] = [
-    {
-        id: '1',
-        name: 'Jeep Wrangler',
-        model: 'Sahara',
-        type: 'SUV',
-        seats: 5,
-        transmission: 'Automatic',
-        fuelType: 'Petrol',
-        dailyRate: 95,
-        image: jeepWranglerImg,
-        shortDescription: 'Conquer any terrain with style and power.'
-    },
-    {
-        id: '2',
-        name: 'Toyota Camry',
-        model: 'SE',
-        type: 'Sedan',
-        seats: 5,
-        transmission: 'Automatic',
-        fuelType: 'Petrol',
-        dailyRate: 60,
-        image: toyotaCamryImg, 
-        shortDescription: 'Comfortable and fuel-efficient for city drives.'
-    },
-    {
-        id: '3',
-        name: 'Mercedes-Benz C-Class',
-        model: 'C300',
-        type: 'Luxury',
-        seats: 5,
-        transmission: 'Automatic',
-        fuelType: 'Petrol',
-        dailyRate: 150,
-        image: mercedesImg, 
-        shortDescription: 'Experience luxury and performance on every journey.'
-    },
-    {
-        id: '4',
-        name: 'Honda CR-V',
-        model: 'EX',
-        type: 'SUV',
-        seats: 5,
-        transmission: 'Automatic',
-        fuelType: 'Petrol',
-        dailyRate: 70,
-        image: hondaCRVImg,
-        shortDescription: 'Versatile and reliable for family adventures.'
-    },
-    {
-        id: '5',
-        name: 'Nissan Frontier',
-        model: 'Pro-4X',
-        type: 'Truck',
-        seats: 4,
-        transmission: 'Automatic',
-        fuelType: 'Petrol',
-        dailyRate: 110,
-        image: nissanFrontierImg,
-        shortDescription: 'Robust and ready for heavy-duty tasks.'
-    },
-    {
-        id: '6',
-        name: 'Tesla Model 3',
-        model: 'Long Range',
-        type: 'Electric',
-        seats: 5,
-        transmission: 'Automatic',
-        fuelType: 'Electric',
-        dailyRate: 130,
-        image: teslaModel3Img,
-        shortDescription: 'Eco-friendly driving with cutting-edge technology.'
-    },
-     {
-        id: '7',
-        name: 'Bus',
-        model: 'Long Bus',
-        type: 'Electric',
-        seats: 40,
-        transmission: 'Automatic',
-        fuelType: 'Electric',
-        dailyRate: 230,
-        image: busImg,
-        shortDescription: 'good for large group.'
-    },
-     {
-        id: '8',
-        name: 'pinkie',
-        model: 'brabus',
-        type: 'Electric',
-        seats: 4,
-        transmission: 'Automatic',
-        fuelType: 'Electric',
-        dailyRate: 100,
-        image: pinkieImg,
-        shortDescription: 'aesthetic.'
-    }
-];
-
-
+// Removed local image imports as data will come from API
 
 export const VehiclesListing = () => {
-    //  manage filter states here
-    const [filters, setFilters] = useState({}); // Example: { type: 'SUV', priceMax: 100 }
-    const [sort, setSort] = useState('dailyRateAsc'); // Example: 'dailyRateAsc', 'popularity'
+    // Fetch data using the RTK Query hook
+    const { data: vehicles, error, isLoading } = useGetAllVehiclesQuery();
 
-    // In a real app, you'd fetch data based on filters/sort
-    const filteredAndSortedVehicles = mockVehicles; // Placeholder for now
+    // Manage filter and sort states
+    const [filters, setFilters] = useState({
+        type: '', // This will filter based on vehicleSpec.model for now
+        maxDailyPrice: 250, // Set a reasonable default max price
+    });
+    const [sort, setSort] = useState('dailyRateAsc'); // 'dailyRateAsc', 'dailyRateDesc'
+
+    const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+        const { id, value } = e.target;
+        setFilters(prevFilters => ({
+            ...prevFilters,
+            [id]: id === 'maxDailyPrice' ? Number(value) : value,
+        }));
+    };
+
+    const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSort(e.target.value);
+    };
+
+    // Memoize filtered and sorted vehicles to prevent unnecessary re-renders
+    const filteredAndSortedVehicles = useMemo(() => {
+        if (!vehicles) return []; // Return empty array if data is not yet available
+
+        let filtered = vehicles.filter(vehicle => {
+            // Filter by vehicle type (using vehicleSpec.model as a proxy for 'type')
+            const matchesType = filters.type ? vehicle.vehicleSpec.model.toLowerCase().includes(filters.type.toLowerCase()) : true;
+            // Filter by max daily price (using rentalRate)
+            const matchesPrice = vehicle.rentalRate <= filters.maxDailyPrice;
+            return matchesType && matchesPrice;
+        });
+
+        // Apply sorting
+        filtered.sort((a, b) => {
+            if (sort === 'dailyRateAsc') {
+                return a.rentalRate - b.rentalRate;
+            } else if (sort === 'dailyRateDesc') {
+                return b.rentalRate - a.rentalRate;
+            }
+            return 0; // No sorting if 'popularity' or other undefined sort is selected
+        });
+
+        return filtered;
+    }, [vehicles, filters, sort]); // Recalculate when vehicles data, filters, or sort change
+
+    // Display loading state
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <span className="loading loading-spinner loading-lg text-purple-600"></span>
+                <p className="ml-4 text-lg text-purple-600">Loading vehicles...</p>
+            </div>
+        );
+    }
+
+    // Display error state
+    if (error) {
+        // You might want a more user-friendly error message or a retry mechanism
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-red-50 text-red-700 p-4">
+                <p>Error loading vehicles: {error instanceof Error ? error.message : 'An unknown error occurred'}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-gray-50 min-h-screen">
@@ -150,41 +88,64 @@ export const VehiclesListing = () => {
 
             {/* Main Content Area */}
             <div className="container mx-auto p-8">
-                {/* Filters and Search - Conceptual Section */}
+                {/* Filters and Search */}
                 <div className="bg-white rounded-lg shadow-lg p-6 mb-8 border border-gray-100">
                     <h2 className="text-2xl font-bold text-purple-800 mb-4">Find Your Perfect Ride</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {/* Example Filter: Vehicle Type */}
+                        {/* Filter: Vehicle Type */}
                         <div>
-                            <label htmlFor="vehicleType" className="block text-gray-700 text-sm font-semibold mb-2">Vehicle Type</label>
-                            <select id="vehicleType" className="select select-bordered w-full">
+                            <label htmlFor="type" className="block text-gray-700 text-sm font-semibold mb-2">Vehicle Type</label>
+                            <select
+                                id="type"
+                                className="select select-bordered w-full"
+                                value={filters.type}
+                                onChange={handleFilterChange}
+                            >
                                 <option value="">All Types</option>
+                                {/* These options are based on your mock data's 'type' values,
+                                    but now they will filter against vehicle.vehicleSpec.model */}
                                 <option value="SUV">SUV</option>
                                 <option value="Sedan">Sedan</option>
                                 <option value="Luxury">Luxury</option>
                                 <option value="Truck">Truck</option>
                                 <option value="Electric">Electric</option>
+                                <option value="Bus">Bus</option>
+                                <option value="brabus">Brabus</option>
                             </select>
                         </div>
 
-                        {/* Example Filter: Price Range */}
+                        {/* Filter: Max Daily Price */}
                         <div>
-                            <label htmlFor="priceRange" className="block text-gray-700 text-sm font-semibold mb-2">Max Daily Price</label>
-                            <input type="range" min="0" max="200" value="200" className="range range-primary" step="10" />
+                            <label htmlFor="maxDailyPrice" className="block text-gray-700 text-sm font-semibold mb-2">Max Daily Price: ${filters.maxDailyPrice}</label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="250" // Adjusted max to cover your highest mock rate (230)
+                                value={filters.maxDailyPrice}
+                                id="maxDailyPrice"
+                                className="range range-primary"
+                                step="10"
+                                onChange={handleFilterChange}
+                            />
                             <div className="w-full flex justify-between text-xs px-2 text-gray-600">
                                 <span>$0</span>
-                                <span>$100</span>
-                                <span>$200+</span>
+                                <span>$125</span>
+                                <span>$250+</span>
                             </div>
                         </div>
 
-                        {/* Example Sort */}
+                        {/* Sort By */}
                         <div>
                             <label htmlFor="sortBy" className="block text-gray-700 text-sm font-semibold mb-2">Sort By</label>
-                            <select id="sortBy" className="select select-bordered w-full">
+                            <select
+                                id="sortBy"
+                                className="select select-bordered w-full"
+                                value={sort}
+                                onChange={handleSortChange}
+                            >
                                 <option value="dailyRateAsc">Price: Low to High</option>
                                 <option value="dailyRateDesc">Price: High to Low</option>
-                                <option value="popularity">Popularity</option>
+                                {/* 'Popularity' sorting would require a 'popularity' field in your Vehicle data */}
                             </select>
                         </div>
 
@@ -198,59 +159,67 @@ export const VehiclesListing = () => {
 
                 {/* Vehicle Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {filteredAndSortedVehicles.map((vehicle) => (
-                        <div key={vehicle.id} className="card bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden transform hover:scale-105 transition-transform duration-300">
-                            <figure>
-                                <img
-                                    src={vehicle.image} // CHANGED from vehicle.imageUrl to vehicle.image
-                                    alt={`${vehicle.name} ${vehicle.model}`}
-                                    className="w-full h-48 object-cover"
-                                />
-                            </figure>
-                            <div className="card-body p-6">
-                                <h2 className="card-title text-purple-800 text-2xl font-bold mb-1">
-                                    {vehicle.name} <span className="text-lg text-gray-500 font-normal">{vehicle.model}</span>
-                                </h2>
-                                <p className="text-gray-700 text-sm mb-3">{vehicle.shortDescription}</p>
+                    {filteredAndSortedVehicles.length > 0 ? (
+                        filteredAndSortedVehicles.map((vehicle) => (
+                            <div key={vehicle.vehicleId} className="card bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                                <figure>
+                                    <img
+                                        src={vehicle.imageUrl} // Now using imageUrl from API data
+                                        alt={`${vehicle.vehicleSpec.manufacturer} ${vehicle.vehicleSpec.model}`}
+                                        className="w-full h-48 object-cover"
+                                    />
+                                </figure>
+                                <div className="card-body p-6">
+                                    <h2 className="card-title text-purple-800 text-2xl font-bold mb-1">
+                                        {vehicle.vehicleSpec.manufacturer} <span className="text-lg text-gray-500 font-normal">{vehicle.vehicleSpec.model}</span>
+                                    </h2>
+                                    <p className="text-gray-700 text-sm mb-3">{vehicle.description}</p>
 
-                                {/* Specifications Grid */}
-                                <div className="grid grid-cols-2 gap-y-2 text-gray-600 text-sm mb-4">
-                                    <div className="flex items-center gap-2">
-                                        <FaCar className="text-purple-600" /> {vehicle.type}
+                                    {/* Specifications Grid */}
+                                    <div className="grid grid-cols-2 gap-y-2 text-gray-600 text-sm mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <FaCar className="text-purple-600" /> {vehicle.vehicleSpec.model} {/* Using model as a type indicator */}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <FaChair className="text-purple-600" /> {vehicle.vehicleSpec.seatingCapacity} Seats
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <FaGasPump className="text-purple-600" /> {vehicle.vehicleSpec.fuelType}
+                                        </div>
+                                        {/* Assuming your backend's VehicleSpec includes 'transmission' */}
+                                        {/* If it doesn't, you'll need to add it to types/vehicleDetails.ts VehicleSpec interface */}
+                                        <div className="flex items-center gap-2">
+                                            <FaCogs className="text-purple-600" /> {vehicle.vehicleSpec.transmission}
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <FaChair className="text-purple-600" /> {vehicle.seats} Seats
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <FaGasPump className="text-purple-600" /> {vehicle.fuelType}
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <FaCogs className="text-purple-600" /> {vehicle.transmission}
-                                    </div>
-                                </div>
 
-                                <div className="flex justify-between items-baseline mb-4">
-                                    <p className="text-3xl font-extrabold text-orange-600">
-                                        ${vehicle.dailyRate}
-                                        <span className="text-lg font-normal text-gray-500">/day</span>
-                                    </p>
-                                    <div className="badge badge-outline text-purple-600 border-purple-600">Available</div>
-                                </div>
+                                    <div className="flex justify-between items-baseline mb-4">
+                                        <p className="text-3xl font-extrabold text-orange-600">
+                                            ${vehicle.rentalRate}
+                                            <span className="text-lg font-normal text-gray-500">/day</span>
+                                        </p>
+                                        <div className="badge badge-outline text-purple-600 border-purple-600">
+                                            {vehicle.availability ? 'Available' : 'Unavailable'}
+                                        </div>
+                                    </div>
 
-                                <div className="card-actions justify-end">
-                                    <Link to={`/vehicles/${vehicle.id}`} className="btn bg-purple-600 hover:bg-purple-700 text-white w-full">
-                                        View Details
-                                    </Link>
-                                    {/* Optionally add a "Book Now" button that leads directly to booking with pre-selected car */}
-                                    {/* <button className="btn bg-orange-500 hover:bg-orange-600 text-white w-full mt-2">Book Now</button> */}
+                                    <div className="card-actions justify-end">
+                                        <Link to={`/vehicles/${vehicle.vehicleId}`} className="btn bg-purple-600 hover:bg-purple-700 text-white w-full">
+                                            View Details
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
+                        ))
+                    ) : (
+                        <div className="col-span-full text-center text-gray-600 text-lg py-10">
+                            No vehicles found matching your criteria.
                         </div>
-                    ))}
+                    )}
                 </div>
 
-                {/* Pagination (Conceptual)
-                <div className="flex justify-center mt-12">
+                {/* Pagination (Conceptual) - uncomment and implement if needed */}
+                {/* <div className="flex justify-center mt-12">
                     <div className="join">
                         <button className="join-item btn btn-primary bg-purple-700 hover:bg-purple-800 text-white">«</button>
                         <button className="join-item btn btn-primary bg-purple-700 hover:bg-purple-800 text-white">Page 1</button>
