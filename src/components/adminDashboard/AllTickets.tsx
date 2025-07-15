@@ -94,18 +94,18 @@ export const AllTickets = () => {
       <div className="text-2xl font-bold text-center mb-4 text-orange-400">
         All Tickets
       </div>
-      <div className="overflow-x-auto bg-white p-6 rounded-lg shadow-md">
+      <div className="overflow-x-auto bg-gray-100 p-6 rounded-lg shadow-md">
         <table className="table w-full text-left">
           <thead>
             <tr>
-              <th className="p-4 text-black">Ticket ID</th>
-              <th className="p-4 text-black">Subject</th>
-              <th className="p-4 text-black">Description</th>
-              <th className="p-4 text-black">Status</th>
-              <th className="p-4 text-black">Created By</th>
-              <th className="p-4 text-black">Created At</th> text-black
-              <th className="p-4 text-black">Last Updated</th>
-              <th className="p-4 text-black">Actions</th>
+              <th className="p-4 text-purple-600">Ticket ID</th>
+              <th className="p-4 text-purple-600">Subject</th>
+              <th className="p-4 text-purple-600">Description</th>
+              <th className="p-4 text-purple-600">Status</th>
+              <th className="p-4 text-purple-600">Created By</th>
+              <th className="p-4 text-purple-600">Created At</th> text-black
+              <th className="p-4 text-purple-600">Last Updated</th>
+              <th className="p-4 text-purple-600">Actions</th>
             </tr>
           </thead>
           <tbody>

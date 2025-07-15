@@ -60,7 +60,7 @@ const UserTickets = () => {
 
   return (
     <div className="min-h-screen bg-darkGray text-white p-6">
-      <h2 className="text-3xl font-bold text-center mb-8 text-accentPink">My Support Tickets</h2>
+      <h2 className="text-3xl font-bold text-purple-600 text-center mb-8 text-accentPink">My Support Tickets</h2>
 
       {/* Form to create a new ticket */}
       <div className="bg-lightGray rounded-lg shadow-md p-6 mb-8 max-w-2xl mx-auto">
@@ -115,7 +115,7 @@ const UserTickets = () => {
             </thead>
             <tbody>
               {userTickets.map((ticket: TicketDetails) => (
-                <tr key={ticket.ticketId} className="border-b border-gray-600 hover:bg-gray-700 transition-colors duration-150">
+                <tr key={ticket.ticketId} className="border-b  border-gray-600 hover:bg-gray-700 transition-colors duration-150">
                   <td className="p-4">{ticket.ticketId}</td>
                   <td className="p-4">{ticket.subject}</td>
                   <td className="p-4">{ticket.status}</td>

@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom'; // Added Link
+import { useParams, useNavigate, Link } from 'react-router-dom'; 
 import { useGetVehicleByIdQuery } from '../features/api/vehiclesApi';
 import { useCreateBookingMutation } from '../features/api/userApi';
-import  type { Vehicle } from '../types/vehicleDetails'; // Vehicle interface from vehicleDetails
-import type { CreateBookingPayload } from '../types/Types'; // Import CreateBookingPayload
+import  type { Vehicle } from '../types/vehicleDetails'; 
+import type { CreateBookingPayload } from '../types/Types'; 
 import { FaCar, FaChair, FaGasPump, FaCogs, FaCalendarAlt, FaMapMarkerAlt, FaDollarSign } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import  type { RootState } from '../apps/store';
 import { Toaster, toast } from 'sonner';
 
-export const VehicleDetails = () => {
+export const vDetails = () => {
     const { id } = useParams<{ id: string }>();
     const vehicleId = id ? parseInt(id) : undefined;
     const navigate = useNavigate();
 
     const { data: vehicle, error, isLoading } = useGetVehicleByIdQuery(vehicleId!, {
-        skip: vehicleId === undefined, // Skip query if id is not available
+        skip: vehicleId === undefined, 
     });
 
     const [createBooking, { isLoading: isBookingLoading }] = useCreateBookingMutation();
@@ -33,7 +33,7 @@ export const VehicleDetails = () => {
 
             if (dropOff > pickUp) {
                 const diffTime = Math.abs(dropOff.getTime() - pickUp.getTime());
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Calculate difference in days
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
                 setTotalCost(diffDays * vehicle.rentalRate);
             } else {
                 setTotalCost(0); // Invalid date range

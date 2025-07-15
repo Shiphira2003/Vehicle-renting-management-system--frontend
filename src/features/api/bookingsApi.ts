@@ -1,7 +1,7 @@
-// src/features/api/bookingsApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../apps/store';
-import type { BookingDetails } from '../../types/BookingDetails'; // Assuming path to your new interface
+import type { BookingDetails } from '../../types/BookingDetails';
+import type { CreateBookingPayload } from '../../types/Types';
 
 export const bookingsApi = createApi({
     reducerPath: 'bookingsApi',
@@ -10,7 +10,7 @@ export const bookingsApi = createApi({
         prepareHeaders: (headers, { getState }) => {
             const token = (getState() as RootState).auth.token;
             if (token) {
-                headers.set('Authorization', `${token}`);
+                headers.set('Authorization', `Bearer ${token}`);
             }
             headers.set('Content-Type', 'application/json');
             return headers;
@@ -18,43 +18,54 @@ export const bookingsApi = createApi({
     }),
     refetchOnReconnect: true,
     refetchOnMountOrArgChange: true,
+    tagTypes: ['Bookings', 'Booking'],
 
-    tagTypes: ['Bookings', 'Booking'], // Tags for cache invalidation
     endpoints: (builder) => ({
-        createBooking: builder.mutation<BookingDetails, any>({ // Adjust 'any' to specific create payload type
+        // ✅ Create a new booking
+        createBooking: builder.mutation<BookingDetails, CreateBookingPayload>({
             query: (createBookingPayload) => ({
                 url: 'bookings',
                 method: 'POST',
                 body: createBookingPayload,
             }),
-            invalidatesTags: ["Bookings"]
+            invalidatesTags: ['Bookings'],
         }),
-        updateBooking: builder.mutation<BookingDetails, { bookingId: number; status?: "Pending" | "Confirmed" | "Completed" | "Cancelled"; [key: string]: any; }>({
+
+        // ✅ Update booking
+        updateBooking: builder.mutation<
+            BookingDetails,
+            { bookingId: number; status?: "Pending" | "Confirmed" | "Completed" | "Cancelled"; [key: string]: any }
+        >({
             query: ({ bookingId, ...bookingUpdatePayload }) => ({
                 url: `bookings/${bookingId}`,
-                method: 'PUT', // Or 'PATCH' depending on your backend
+                method: 'PUT',
                 body: bookingUpdatePayload,
             }),
-            // FIX: Corrected invalidatesTags format
             invalidatesTags: (result, error, arg) => [
-                'Bookings', // Invalidate the list of all bookings
-                { type: 'Booking', id: arg.bookingId } // Invalidate the specific booking by ID
+                'Bookings',
+                { type: 'Booking', id: arg.bookingId },
             ],
         }),
+
+        // ✅ Get all bookings
         getAllBookings: builder.query<BookingDetails[], void>({
             query: () => 'bookings',
-            // FIX: Corrected providesTags format
-            providesTags: ["Bookings"]
+            providesTags: ['Bookings'],
         }),
+
+        // ✅ Get booking by ID
         getBookingById: builder.query<BookingDetails, number>({
             query: (bookingId) => `bookings/${bookingId}`,
-            // FIX: Corrected providesTags format
             providesTags: (result, error, id) => [{ type: 'Booking', id }],
         }),
-        getAllBookingsForOneUserById: builder.query<BookingDetails[], number>({
-            query: (userId) => `bookings/user?userId=${userId}`,
-            providesTags: ["Bookings"]
+
+        // ✅ Get bookings by user ID
+        getBookingsByUserId: builder.query<BookingDetails[], number>({
+            query: (userId) => `bookings/user/${userId}`,
+            providesTags: ['Bookings'],
         }),
+
+        // ✅ Delete a booking
         deleteBooking: builder.mutation<void, number>({
             query: (bookingId) => ({
                 url: `bookings/${bookingId}`,
@@ -65,12 +76,11 @@ export const bookingsApi = createApi({
     }),
 });
 
-// Export hooks for use in components
 export const {
     useCreateBookingMutation,
     useUpdateBookingMutation,
     useGetAllBookingsQuery,
     useGetBookingByIdQuery,
-    useGetAllBookingsForOneUserByIdQuery,
+    useGetBookingsByUserIdQuery,    
     useDeleteBookingMutation,
 } = bookingsApi;
