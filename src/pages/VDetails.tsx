@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import  type { RootState } from '../apps/store';
 import { Toaster, toast } from 'sonner';
 
-export const vDetails = () => {
+export const VDetails = () => {
     const { id } = useParams<{ id: string }>();
     const vehicleId = id ? parseInt(id) : undefined;
     const navigate = useNavigate();
@@ -216,3 +216,5 @@ export const vDetails = () => {
         </div>
     );
 };
+
+export default VDetails;

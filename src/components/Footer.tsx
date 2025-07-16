@@ -1,10 +1,10 @@
-
 import { FaFacebookF, FaInstagram, FaTwitter, FaPhone, FaEnvelope } from 'react-icons/fa';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 const Footer = () => {
   return (
     // Main footer container with the new light background and dark bottom border
-   <footer className="bg-purple-300 text-purple-200 py-10 px-4 md:px-8 border-b-[15px] border-purple-200">
+    <footer className="bg-purple-300 text-purple-200 py-10 px-4 md:px-8 border-b-[15px] border-purple-200">
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 pb-8">
         {/* Column 1: Shiwama Drive Info */}
@@ -31,9 +31,15 @@ const Footer = () => {
         <div>
           <h3 className="text-xl font-bold mb-4 uppercase text-footerHeadingDark">Quick Links</h3>
           <ul>
-            <li className="mb-2"><a href="#" className="hover:underline text-footerLinkRed">Contact</a></li>
-            <li className="mb-2"><a href="#" className="hover:underline text-footerLinkRed">Register</a></li>
-            <li className="mb-2"><a href="#" className="hover:underline text-footerLinkRed">Login</a></li>
+            <li className="mb-2">
+              <Link to="/contact" className="hover:underline text-footerLinkRed">Contact</Link>
+            </li>
+            <li className="mb-2">
+              <Link to="/register" className="hover:underline text-footerLinkRed">Register</Link>
+            </li>
+            <li className="mb-2">
+              <Link to="/login" className="hover:underline text-footerLinkRed">Login</Link>
+            </li>
           </ul>
         </div>
 
@@ -41,9 +47,30 @@ const Footer = () => {
         <div>
           <h3 className="text-xl font-bold mb-4 uppercase text-footerHeadingDark">Follow Us</h3>
           <div className="flex space-x-4">
-            <a href="#" className="text-3xl text-footerHeadingDark hover:text-gray-600"><FaFacebookF /></a>
-            <a href="#" className="text-3xl text-footerHeadingDark hover:text-gray-600"><FaInstagram /></a>
-            <a href="#" className="text-3xl text-footerHeadingDark hover:text-gray-600"><FaTwitter /></a>
+            <a 
+              href="https://www.facebook.com/Shiphira-Wamaitha" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-3xl text-footerHeadingDark hover:text-gray-600"
+            >
+              <FaFacebookF />
+            </a>
+            <a 
+              href="https://www.instagram.com/Shiphira-Wamaitha" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-3xl text-footerHeadingDark hover:text-gray-600"
+            >
+              <FaInstagram />
+            </a>
+            <a 
+              href="https://www.twitter.com/yourhandle" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-3xl text-footerHeadingDark hover:text-gray-600"
+            >
+              <FaTwitter />
+            </a>
           </div>
         </div>
       </div>

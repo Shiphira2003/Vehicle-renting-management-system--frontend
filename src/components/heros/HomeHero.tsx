@@ -1,7 +1,13 @@
-import Image from '../../assets/home.jpg'
+import { useNavigate } from 'react-router-dom';
+import Image from '../../assets/home.jpg';
 
 const Hero = () => {
- 
+  const navigate = useNavigate();
+
+  const handleServicesClick = () => {
+    navigate('/services'); // Make sure this matches your route path
+  };
+
   return (
     <section
       className="w-screen h-screen bg-cover bg-center bg-no-repeat relative"
@@ -19,9 +25,12 @@ const Hero = () => {
           Your ultimate solution for streamlined vehicle rentals and comprehensive fleet management.
           From booking to maintenance, take full control of your mobility with ease.
         </p>
-       <button className="btn btn-primary bg-white text-blue-500 hover:bg-gray-200 border-none text-lg px-9 py-4 rounded-lg font-semibold uppercase tracking-wider">
-    View Our Services
-</button>
+        <button 
+          onClick={handleServicesClick}
+          className="btn btn-primary bg-white text-blue-500 hover:bg-gray-200 border-none text-lg px-9 py-4 rounded-lg font-semibold uppercase tracking-wider"
+        >
+          View Our Services
+        </button>
       </div>
     </section>
   );

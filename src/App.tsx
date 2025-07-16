@@ -14,6 +14,7 @@ import AdminUserProfile from "./components/adminDashboard/AdminUserProfile"
 import Home from "./pages/Home"
 import Contact from "./pages/Contact"
 import Services from "./pages/Services"
+import VDetails from "./pages/VDetails"
 import { AllUsers } from "./components/adminDashboard/AllUsers"
 import { AllBookings } from "./components/adminDashboard/AllBookings"
 import { AllTickets } from "./components/adminDashboard/AllTickets"
@@ -49,6 +50,11 @@ function App() {
       path: 'contact',
       element: <Contact/>,
       errorElement: <Error />,
+    },
+    {
+      path:'vDetails',
+      element:<VDetails />,
+        errorElement: <Error />,
     },
     {
       path: 'dashboard',

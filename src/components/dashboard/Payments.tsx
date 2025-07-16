@@ -52,7 +52,7 @@ export const UserPayments = () => {
             <div className="overflow-x-auto">
                 <table className="table w-full bg-lightGray rounded-lg shadow-md">
                     <thead>
-                        <tr className="bg-gray-700 text-white">
+                        <tr className="bg-gray-300 text-white">
                             <th className="p-4 text-left">Payment ID</th>
                             <th className="p-4 text-left">Booking ID</th>
                             <th className="p-4 text-left">Amount</th>

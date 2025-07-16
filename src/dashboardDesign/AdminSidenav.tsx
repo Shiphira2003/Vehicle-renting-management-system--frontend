@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export const AdminSideNav = () => {
     return (
-        <ul className="menu fixed top-0 left-0 pt-16 h-screen w-47 bg-gray-300 text-dark-300 shadow-lg gap-2 text-base-content p-4 z-40">
+        <ul className="menu fixed top-0 left-0 pt-16 h-screen w-52 bg-gray-300 text-dark-300 shadow-lg gap-2 text-base-content p-4 z-40">
             {/* Analytics */}
             <li>
                 <Link to="analytics" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">

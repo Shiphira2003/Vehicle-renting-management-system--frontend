@@ -1,3 +1,21 @@
+export interface NewPayment {
+  bookingId: number;
+  amount: number;
+  paymentDate: string;
+  paymentMethod: string;
+  transactionId: string;
+  paymentStatus: "Pending" | "Completed" | "Failed" | "Refunded";
+}
+
+export interface UpdatePayment {
+  paymentId: number;
+  amount?: number;
+  paymentDate?: string;
+  paymentMethod?: string;
+  transactionId?: string;
+  paymentStatus?: "Pending" | "Completed" | "Failed" | "Refunded";
+}
+
 export interface PaymentDetails {
   userId: number;
   paymentId: number;

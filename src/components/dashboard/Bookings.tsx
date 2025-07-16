@@ -49,19 +49,19 @@ const UserBookings = () => {
                 <table className="table w-full bg-lightGray rounded-lg shadow-md">
                     <thead>
                         <tr className="bg-gray-700 text-white">
-                            <th className="p-4 text-left">Booking ID</th>
-                            <th className="p-4 text-left">Vehicle</th>
-                            <th className="p-4 text-left">Booking Date</th>
-                            <th className="p-4 text-left">Return Date</th>
-                            <th className="p-4 text-left">Total Amount</th>
-                            <th className="p-4 text-left">Status</th>
+                            <th className="p-4 text-purple-500 text-left">Booking ID</th>
+                            <th className="p-4 text-purple-500 text-left">Vehicle</th>
+                            <th className="p-4 text-purple-500 text-left">Booking Date</th>
+                            <th className="p-4 text-purple-500 text-left">Return Date</th>
+                            <th className="p-4 text-purple-500 text-left">Total Amount</th>
+                            <th className="p-4 text-purple-500 text-left">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         {bookings.map((booking: BookingDetails) => (
                             <tr key={booking.bookingId} className="border-b border-gray-600 hover:bg-gray-700 transition-colors duration-150">
-                                <td className="p-4">{booking.bookingId}</td>
-                                <td className="p-4">
+                                <td className="p-4 text-black">{booking.bookingId}</td>
+                                <td className="p-4 text-black">
                                     {booking.vehicle && (
                                         <div className="flex items-center gap-2">
                                             {/* Uncomment and ensure imageUrl exists if you want to display it */}
@@ -74,10 +74,10 @@ const UserBookings = () => {
                                         </div>
                                     )}
                                 </td>
-                                <td className="p-4">{new Date(booking.bookingDate).toLocaleDateString()}</td>
-                                <td className="p-4">{new Date(booking.returnDate).toLocaleDateString()}</td>
-                                <td className="p-4">${booking.totalAmount}</td>
-                                <td className="p-4">{booking.bookingStatus}</td>
+                                <td className="p-4 text-black">{new Date(booking.bookingDate).toLocaleDateString()}</td>
+                                <td className="p-4 text-black">{new Date(booking.returnDate).toLocaleDateString()}</td>
+                                <td className="p-4 text-black">${booking.totalAmount}</td>
+                                <td className="p-4 text-black">{booking.bookingStatus}</td>
                             </tr>
                         ))}
                     </tbody>

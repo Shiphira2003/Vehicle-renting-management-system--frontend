@@ -128,9 +128,9 @@ export const VehiclesListing = () => {
                                 onChange={handleFilterChange}
                             />
                             <div className="w-full flex justify-between text-xs px-2 text-gray-600">
-                                <span>$0</span>
-                                <span>$125</span>
-                                <span>$250+</span>
+                                <span>KSH 0</span>
+                                <span>KSH 1000</span>
+                                <span>KSH 2000+</span>
                             </div>
                         </div>
 

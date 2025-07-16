@@ -105,25 +105,25 @@ const UserTickets = () => {
         <div className="overflow-x-auto">
           <table className="table w-full bg-lightGray rounded-lg shadow-md">
             <thead>
-              <tr className="bg-gray-700 text-white">
-                <th className="p-4 text-left">Ticket ID</th>
-                <th className="p-4 text-left">Subject</th>
-                <th className="p-4 text-left">Status</th>
-                <th className="p-4 text-left">Created At</th>
-                <th className="p-4 text-left">Last Updated</th>
+              <tr className="bg-gray-300 text-white">
+                <th className="p-4  text-purple-500 text-left">Ticket ID</th>
+                <th className="p-4  text-purple-500 text-left">Subject</th>
+                <th className="p-4  text-purple-500 text-left">Status</th>
+                <th className="p-4  text-purple-500 text-left">Created At</th>
+                <th className="p-4  text-purple-500 text-left">Last Updated</th>
               </tr>
             </thead>
             <tbody>
               {userTickets.map((ticket: TicketDetails) => (
                 <tr key={ticket.ticketId} className="border-b  border-gray-600 hover:bg-gray-700 transition-colors duration-150">
-                  <td className="p-4">{ticket.ticketId}</td>
-                  <td className="p-4">{ticket.subject}</td>
-                  <td className="p-4">{ticket.status}</td>
-                  <td className="p-4">{new Date(ticket.createdAt).toLocaleDateString()}</td>
-                  <td className="p-4">{new Date(ticket.updatedAt).toLocaleDateString()}</td>
+                  <td className="p-4 text-black">{ticket.ticketId}</td>
+                  <td className="p-4 text-black">{ticket.subject}</td>
+                  <td className="p-4 text-black">{ticket.status}</td>
+                  <td className="p-4 text-black">{new Date(ticket.createdAt).toLocaleDateString()}</td>
+                  <td className="p-4 text-black">{new Date(ticket.updatedAt).toLocaleDateString()}</td>
                 </tr>
               ))}
-            </tbody>
+            </tbody> text-black
           </table>
         </div>
       )}

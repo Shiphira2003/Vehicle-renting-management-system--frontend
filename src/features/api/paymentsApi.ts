@@ -1,17 +1,16 @@
 // src/features/api/paymentsApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../apps/store';
-import type { PaymentDetails, NewPayment, UpdatePayment } from '../../types/paymentDetails'; // Correct import path
+import type { PaymentDetails, NewPayment, UpdatePayment } from '../../types/paymentDetails';
 
 export const paymentsApi = createApi({
     reducerPath: 'paymentsApi',
     baseQuery: fetchBaseQuery({
         baseUrl: 'http://localhost:8000/api/',
         prepareHeaders: (headers, { getState }) => {
-            // Assuming you store your token in Redux state or localStorage
-            const token = (getState() as RootState).auth.token; // Adjust based on your auth slice
+            const token = (getState() as RootState).auth.token; 
             if (token) {
-                headers.set('Authorization', `Bearer ${token}`); // FIX: Ensure 'Bearer ' prefix
+                headers.set('Authorization', `Bearer ${token}`);
             }
             return headers;
         },
@@ -37,7 +36,7 @@ export const paymentsApi = createApi({
             }),
             invalidatesTags: ['Payments'],
         }),
-        updatePayment: builder.mutation<PaymentDetails, { paymentId: number; status?: UpdatePayment['status'] | string; amount?: UpdatePayment['amount']; paymentMethod?: UpdatePayment['paymentMethod']; transactionId?: UpdatePayment['transactionId'] }>({
+        updatePayment: builder.mutation<PaymentDetails, { paymentId: number; status?: UpdatePayment['paymentStatus'] | string; amount?: UpdatePayment['amount']; paymentMethod?: UpdatePayment['paymentMethod']; transactionId?: UpdatePayment['transactionId'] }>({
             query: ({ paymentId, ...patch }) => ({
                 url: `payments/${paymentId}`,
                 method: 'PUT', // Or PATCH depending on your backend
