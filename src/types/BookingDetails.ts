@@ -5,9 +5,9 @@ export interface BookingDetails {
     userId: number;
     vehicleId: number;
     locationId: number;
-    bookingDate: string; // Assuming string for simplicity, or Date if parsed
-    returnDate: string; // Assuming string for simplicity, or Date if parsed
-    totalAmount: string; // Numeric type from DB is often string in JS/TS
+    bookingDate: string; 
+    returnDate: string; 
+    totalAmount: string; 
     bookingStatus: "Pending" | "Confirmed" | "Completed" | "Cancelled";
     createdAt: string;
     updatedAt: string;
@@ -19,7 +19,9 @@ export interface BookingDetails {
     // Nested vehicle details
     vehicle: {
         vehicleId: number;
-        rentalRate: string; // Numeric from DB
+        rentalRate: string;
+        imageUrl: string;
+         // Numeric from DB
         availability: boolean;
         // Nested vehicle specification details
         vehicleSpec: {
@@ -35,7 +37,7 @@ export interface BookingDetails {
             features: string;
         };
     };
-    // Nested location details (optional, but good to have if needed for display)
+    // Nested location details 
     location: {
         locationId: number;
         name: string;

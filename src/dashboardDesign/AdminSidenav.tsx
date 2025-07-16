@@ -6,7 +6,7 @@ export const AdminSideNav = () => {
         <ul className="menu fixed top-0 left-0 pt-16 h-screen w-52 bg-gray-300 text-dark-300 shadow-lg gap-2 text-base-content p-4 z-40">
             {/* Analytics */}
             <li>
-                <Link to="analytics" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">
+                <Link to="/admindashboard/analytics" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">
                     <TrendingUpIcon className="text-orange-600 w-5 h-5" />
                     <span className="text-gray-800 text-base">Analytics</span>
                 </Link>
@@ -14,7 +14,7 @@ export const AdminSideNav = () => {
 
             {/* All bookings */}
             <li>
-                <Link to="allbookings" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">
+                <Link to="/admindashboard/allbookings" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">
                     <ListTodo className="text-orange-600 w-5 h-5" />
                     <span className="text-gray-800 text-base">All bookings</span>
                 </Link>
@@ -22,7 +22,7 @@ export const AdminSideNav = () => {
 
             {/* All vehicles */}
             <li>
-                <Link to="allvehicles" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">
+                <Link to="/admindashboard/allvehicles" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">
                     <Car className="text-orange-600 w-5 h-5" />
                     <span className="text-gray-800 text-base">All vehicles</span>
                 </Link>
@@ -30,7 +30,7 @@ export const AdminSideNav = () => {
 
             {/* All users */}
             <li>
-                <Link to="allusers" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">
+                <Link to="/admindashboard/allusers" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">
                     <Users className="text-orange-600 w-5 h-5" />
                     <span className="text-gray-800 text-base">All users</span>
                 </Link>
@@ -46,7 +46,7 @@ export const AdminSideNav = () => {
 
             {/* My profile */}
             <li>
-                <Link to="adminprofile" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">
+                <Link to="/admindashboard/adminprofile" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">
                     <SquareUserRound className="text-orange-600 w-5 h-5" />
                     <span className="text-gray-800 text-base">My profile</span>
                 </Link>

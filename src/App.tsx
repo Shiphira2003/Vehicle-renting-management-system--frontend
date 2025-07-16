@@ -23,6 +23,8 @@ import UserBookings from "./components/dashboard/Bookings"
 import UserPayments from "./components/dashboard/Payments"
 import UserTickets from "./components/dashboard/Tickets"
 import Analytics from "./components/adminDashboard/Analytics"
+import PaymentPage from "./pages/Payment"
+import PaymentSuccessPage from "./pages/PaymentSuccess"
 
 function App() {
   const router = createBrowserRouter([
@@ -52,38 +54,47 @@ function App() {
       errorElement: <Error />,
     },
     {
-      path:'vDetails',
-      element:<VDetails />,
-        errorElement: <Error />,
+      path: 'vehicles/:id',
+      element: <VDetails />,
+      errorElement: <Error />,
     },
     {
-      path: 'dashboard',
+      path:'payment/:bookingId',
+      element:<PaymentPage  />,
+      errorElement: <Error />,
+    },
+    {
+      path:'payment-success/:paymentId',
+      element:<PaymentSuccessPage />,
+      errorElement: <Error />,
+    },
+    {
+      path: 'userDashboard', // Changed parent path
       element: (
         <ProtectedRoute>
           <Dashboard />
         </ProtectedRoute>
       ),
       errorElement: <Error />,
-      children: [
+      children: [ 
         {
-          path: "me",
+          path: "my-profile", 
           element: <UserProfile />,
         },
-          {
+        {
           path: "bookings",
           element: <UserBookings />,
         },
-       
-         {
+        {
           path: "payments",
           element: <UserPayments />,
         },
-          {
+        {
           path: "tickets",
           element: <UserTickets />,
         },
       ]
-    },
+    }, 
     {
       path: 'admindashboard',
       element: (
@@ -101,7 +112,7 @@ function App() {
           path: "allbookings",
           element: <AllBookings />,
         },
-         {
+        {
           path: "alltickets",
           element: <AllTickets />,
         },

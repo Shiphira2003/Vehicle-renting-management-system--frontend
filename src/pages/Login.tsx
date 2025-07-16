@@ -25,14 +25,14 @@ export const Login = () => {
     // console.log(data)
     try {
       const res = await loginUser(data).unwrap()
-      // console.log(res)
+    //   console.log(res)
         toast.success(res?.message, { id: loadingToastId })
         dispatch(setCredentials(res))
         // navigate("/dashboard")
         if (res.role === "admin") {
           navigate("/admindashboard");
         } else {
-          navigate("/dashboard");
+          navigate("/userDashboard");
         }
     } catch (err: any) {
       toast.error('Failed to Login: ' + (err.data?.message || err.message || err.error || err));

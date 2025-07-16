@@ -204,9 +204,12 @@ export const VehiclesListing = () => {
                                     </div>
 
                                     <div className="card-actions justify-end">
-                                        <Link to={`/vehicles/${vehicle.vehicleId}`} className="btn bg-purple-600 hover:bg-purple-700 text-white w-full">
-                                            View Details
-                                        </Link>
+                                        <Link 
+  to={`/vehicles/${vehicle.vehicleId}`}  
+  className="btn bg-purple-600 hover:bg-purple-700 text-white w-full"
+>
+  View Details
+</Link>
                                     </div>
                                 </div>
                             </div>

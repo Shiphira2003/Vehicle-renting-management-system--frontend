@@ -9,19 +9,19 @@ const UserBookings = () => {
     const userId = useSelector((state: RootState) => state.auth.user?.userId);
 
     const { data: bookings, isLoading, isError, error } =  useGetBookingsByUserIdQuery(userId!, {
-        skip: !userId, // Skip the query if userId is not available
+        skip: !userId, 
     });
 
     if (!userId) {
-        return <div className="text-center py-10 text-white">Please log in to view your bookings.</div>;
+        return <div className="text-center py-10 text-blue">Please log in to view your bookings.</div>;
     }
 
-    if (isLoading) return <div className="text-center py-10 text-white">Loading your bookings...</div>;
+    if (isLoading) return <div className="text-center py-10 text-purple-500">Loading your bookings...</div>;
 
     if (isError) {
         let errorMessage = "Failed to fetch bookings.";
         if (error) {
-            // Improved error message extraction from RTK Query error object
+            //  message extraction from RTK Query error object
             if ('data' in error && error.data && typeof error.data === 'object' && 'error' in error.data) {
                 errorMessage = (error.data as any).error; // Backend message, e.g., "Invalid ID format"
             } else if ('error' in error && typeof error.error === 'string') {
@@ -36,11 +36,11 @@ const UserBookings = () => {
         Swal.fire({
             icon: 'error',
             title: 'Booking Error',
-            text: errorMessage, // This will now show the specific error from the backend
+            text: errorMessage, // To show the specific error from the backend
         });
         return <div className="text-center py-10 text-red-500">Error loading bookings.</div>;
     }
-    if (!bookings || bookings.length === 0) return <div className="text-center py-10 text-white">You have no bookings yet.</div>;
+    if (!bookings || bookings.length === 0) return <div className="text-center py-10 text-red-500">You have no bookings yet.</div>;
 
     return (
         <div className="min-h-screen bg-darkGray text-white p-6">

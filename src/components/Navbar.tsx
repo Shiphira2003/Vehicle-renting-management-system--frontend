@@ -55,70 +55,81 @@ export const Navbar = () => {
                             className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-lg bg-white rounded-box w-52 border border-purple-100"
                         >
                             <li>
-                                <a href="/" className="text-gray-700 hover:text-purple-600 hover:bg-purple-50" onClick={closeMenu}>
+                                <Link to="/" className="text-gray-700 hover:text-purple-600 hover:bg-purple-50" onClick={closeMenu}>
                                     <BiHome className="text-lg text-purple-600" />
                                     Home
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="/services" className="text-gray-700 hover:text-purple-600 hover:bg-purple-50" onClick={closeMenu}>
+                                <Link to="/services" className="text-gray-700 hover:text-purple-600 hover:bg-purple-50" onClick={closeMenu}>
                                     <FaServicestack className="text-lg text-purple-600" />
                                     Services
-                                </a>
+                                </Link>
                             </li>
-
                             <li>
-                                <a href="/contact" className="text-gray-700 hover:text-purple-600 hover:bg-purple-50" onClick={closeMenu}>
+                                <Link to="/contact" className="text-gray-700 hover:text-purple-600 hover:bg-purple-50" onClick={closeMenu}>
                                     <BiPhone className="text-lg text-purple-600" />
                                     Contact
-                                </a>
+                                </Link>
                             </li>
 
                             <div className="divider my-2"></div>
-                            <li>
-                                <a href="/login" className="text-gray-700 hover:text-purple-600" onClick={closeMenu}>
-                                    Login
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/register" className="btn btn-sm bg-purple-600 hover:bg-purple-700 text-white border-none" onClick={closeMenu}>
-                                    Sign Up
-                                </a>
-                            </li>
+                            {!isAuthenticated ? (
+                                <>
+                                    <li>
+                                        <Link to="/login" className="text-gray-700 hover:text-purple-600" onClick={closeMenu}>
+                                            Login
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/register" className="btn btn-sm bg-purple-600 hover:bg-purple-700 text-white border-none" onClick={closeMenu}>
+                                            Sign Up
+                                        </Link>
+                                    </li>
+                                </>
+                            ) : (
+                                <li>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="text-gray-700 hover:text-purple-600 w-full text-left"
+                                    >
+                                        Logout
+                                    </button>
+                                </li>
+                            )}
                         </ul>
                     )}
                 </div>
 
                 {/* Logo */}
-                <a href="/" className="btn btn-ghost text-xl hover:bg-purple-700 px-2">
+                <Link to="/" className="btn btn-ghost text-xl hover:bg-purple-700 px-2">
                     <FaCar className="text-2xl text-white" />
                     <span className="font-bold text-white">
                         SHIWAMA DRIVE
                     </span>
-                </a>
+                </Link>
             </div>
 
             {/* Navbar Center - Desktop Menu */}
             <div className="navbar-center hidden lg:flex">
                 <ul className="menu menu-horizontal px-1 gap-2">
                     <li>
-                        <a href="/" className="text-white hover:text-purple-200 hover:bg-purple-700 transition-all duration-200">
+                        <Link to="/" className="text-white hover:text-purple-200 hover:bg-purple-700 transition-all duration-200">
                             <BiHome className="text-lg text-white" />
                             Home
-                        </a>
+                        </Link>
                     </li>
                     <li>
-                        <a href="/services" className="text-white hover:text-purple-200 hover:bg-purple-700 transition-all duration-200">
+                        <Link to="/services" className="text-white hover:text-purple-200 hover:bg-purple-700 transition-all duration-200">
                             <FaServicestack className="text-lg text-white" />
                             Services
-                        </a>
+                        </Link>
                     </li>
-
                     <li>
-                        <a href="/contact" className="text-white hover:text-purple-200 hover:bg-purple-700 transition-all duration-200">
+                        <Link to="/contact" className="text-white hover:text-purple-200 hover:bg-purple-700 transition-all duration-200">
                             <BiPhone className="text-lg text-white" />
                             Contact
-                        </a>
+                        </Link>
                     </li>
                 </ul>
             </div>
@@ -126,15 +137,15 @@ export const Navbar = () => {
             {/* Navbar End - Auth Buttons */}
             {!isAuthenticated ? (
                 <div className="navbar-end hidden lg:flex gap-2">
-                    <a href="/login" className="btn btn-ghost text-white hover:text-purple-200 hover:bg-purple-700">
+                    <Link to="/login" className="btn btn-ghost text-white hover:text-purple-200 hover:bg-purple-700">
                         Login
-                    </a>
-                    <a href="/register" className="btn bg-purple-600 hover:bg-purple-700 text-white border-none shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                    </Link>
+                    <Link to="/register" className="btn bg-purple-600 hover:bg-purple-700 text-white border-none shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
                         Sign Up
-                    </a>
+                    </Link>
                 </div>
             ) : (
-                <div className="navbar-end hidden lg:flex gap-2 ">
+                <div className="navbar-end hidden lg:flex gap-2">
                     <div className="dropdown dropdown-end bg-purple-700 rounded-lg">
                         <button tabIndex={0} role="button" className="btn btn-ghost flex items-center text-white hover:bg-purple-600">
                             <div className="flex items-center">
@@ -156,29 +167,27 @@ export const Navbar = () => {
                             </div>
                         </button>
                         <ul tabIndex={0} className="dropdown-content bg-white rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                            {
-                                user && user.role === 'admin' ? (
-                                    <li>
-                                        <Link
-                                            to="/admindashboard/analytics"
-                                            className="flex items-center text-slate-950 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
-                                        >
-                                            <GrDashboard className="mr-3 text-purple-600" />
-                                            Admin Dashboard
-                                        </Link>
-                                    </li>
-                                ) : (
-                                    <li>
-                                        <Link
-                                            to="/dashboard/me"
-                                            className="flex items-center text-slate-950 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
-                                        >
-                                            <GrDashboard className="mr-3 text-purple-600" />
-                                            User Dashboard
-                                        </Link>
-                                    </li>
-                                )
-                            }
+                            {user?.role === 'admin' ? (
+                                <li>
+                                    <Link
+                                        to="/admindashboard/analytics"
+                                        className="flex items-center text-slate-950 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                                    >
+                                        <GrDashboard className="mr-3 text-purple-600" />
+                                        Admin Dashboard
+                                    </Link>
+                                </li>
+                            ) : (
+                                <li>
+                                    <Link
+                                        to="/userDashboard/my-profile"
+                                        className="flex items-center text-slate-950 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                                    >
+                                        <GrDashboard className="mr-3 text-purple-600" />
+                                        User Dashboard
+                                    </Link>
+                                </li>
+                            )}
                             <li>
                                 <button
                                     onClick={handleLogout}
