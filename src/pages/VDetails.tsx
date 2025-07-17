@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom'; 
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useGetVehicleByIdQuery } from '../features/api/vehiclesApi';
-import { useCreateBookingMutation } from '../features/api/userApi';
-import type { Vehicle } from '../types/vehicleDetails'; 
-import type { CreateBookingPayload } from '../types/Types'; 
-import { FaCar, FaChair, FaGasPump, FaCogs, FaDollarSign, FaArrowLeft } from 'react-icons/fa';
+import { useCreateBookingMutation } from '../features/api/userApi'; // Assuming this is correct for booking creation
+import { useGetAllLocationsQuery } from '../features/api/locationApi'; // Corrected import for locations API
+import type { Vehicle } from '../types/vehicleDetails';
+import type { CreateBookingPayload } from '../types/Types'; // Ensure this type is correctly defined
+import type { LocationDetails } from '../types/locationDetails'; // Import LocationDetails type
+import { FaCar, FaChair, FaGasPump, FaCogs, FaDollarSign, FaArrowLeft, FaMapMarkerAlt } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../apps/store';
 import { Toaster, toast } from 'sonner';
@@ -14,17 +16,26 @@ export const VDetails = () => {
     const vehicleId = id ? parseInt(id) : undefined;
     const navigate = useNavigate();
 
-    const { data: vehicle, error, isLoading } = useGetVehicleByIdQuery(vehicleId!, {
-        skip: vehicleId === undefined, 
+    // API Queries
+    const { data: vehicle, error: vehicleError, isLoading: isVehicleLoading } = useGetVehicleByIdQuery(vehicleId!, {
+        skip: vehicleId === undefined,
     });
 
+    // Use useGetAllLocationsQuery from the locationsApi
+    const { data: locations = [], isLoading: isLocationsLoading } = useGetAllLocationsQuery();
     const [createBooking, { isLoading: isBookingLoading }] = useCreateBookingMutation();
+    
+    // Redux State
     const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
+    // Form State
     const [pickupDateTime, setPickupDateTime] = useState('');
     const [dropoffDateTime, setDropoffDateTime] = useState('');
+    const [locationId, setLocationId] = useState<number | null>(null);
     const [totalCost, setTotalCost] = useState(0);
+    const [additionalRequests, setAdditionalRequests] = useState('');
 
+    // Calculate total cost when dates change
     useEffect(() => {
         if (pickupDateTime && dropoffDateTime && vehicle?.rentalRate) {
             const pickUp = new Date(pickupDateTime);
@@ -32,8 +43,8 @@ export const VDetails = () => {
 
             if (dropOff > pickUp) {
                 const diffTime = Math.abs(dropOff.getTime() - pickUp.getTime());
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                setTotalCost(diffDays * vehicle.rentalRate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                setTotalCost(diffDays * parseFloat(vehicle.rentalRate as any)); // Ensure rentalRate is treated as a number
             } else {
                 setTotalCost(0);
             }
@@ -42,194 +53,303 @@ export const VDetails = () => {
         }
     }, [pickupDateTime, dropoffDateTime, vehicle?.rentalRate]);
 
+    // Set default location when locations load
+    useEffect(() => {
+        if (locations.length > 0 && locationId === null) { // Changed to === null for initial setting
+            setLocationId(locations[0].locationId); // Use locationId from LocationDetails
+        }
+    }, [locations, locationId]);
+
+    const validateForm = () => {
+        if (!isAuthenticated || !user?.userId) { // Assuming user.userId based on schema
+            toast.error('Please log in to book a vehicle.');
+            return false;
+        }
+
+        if (!pickupDateTime || !dropoffDateTime) {
+            toast.error('Please select both pick-up and drop-off dates');
+            return false;
+        }
+
+        const pickUp = new Date(pickupDateTime);
+        const dropOff = new Date(dropoffDateTime);
+
+        if (isNaN(pickUp.getTime())) {
+            toast.error('Invalid pick-up date format');
+            return false;
+        }
+
+        if (isNaN(dropOff.getTime())) {
+            toast.error('Invalid drop-off date format');
+            return false;
+        }
+
+        if (dropOff <= pickUp) {
+            toast.error('Drop-off date must be after pick-up date');
+            return false;
+        }
+
+        if (locationId === null) { // Check for null
+            toast.error('Please select a pickup location');
+            return false;
+        }
+
+        if (!vehicleId) {
+            toast.error('Vehicle information is missing');
+            return false;
+        }
+
+        if (totalCost <= 0) {
+            toast.error('Invalid booking duration');
+            return false;
+        }
+
+        return true;
+    };
+
     const handleBookingSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!isAuthenticated || !user?.id) {
-            toast.error('Please log in to book a vehicle.');
-            navigate('/login');
-            return;
-        }
-
-        if (!vehicleId || !pickupDateTime || !dropoffDateTime || totalCost <= 0) {
-            toast.error('Please fill all booking details correctly.');
+        if (!validateForm()) {
             return;
         }
 
         const pickUp = new Date(pickupDateTime);
         const dropOff = new Date(dropoffDateTime);
 
-        if (dropOff <= pickUp) {
-            toast.error('Drop-off date/time must be after pick-up date/time.');
-            return;
-        }
-
-        const defaultLocationId = 1;
-
         const loadingToastId = toast.loading("Processing your booking...");
         try {
             const bookingPayload: CreateBookingPayload = {
-                userId: user.id,
-                vehicleId: vehicleId,
-                locationId: defaultLocationId,
-                bookingDate: pickUp.toISOString(),
-                returnDate: dropOff.toISOString(),
-                totalAmount: parseFloat(totalCost.toFixed(2)),
+                userId: user!.userId, // Use user!.userId
+                vehicleId: vehicleId!,
+                locationId: locationId!,
+                bookingDate: pickUp.toISOString().slice(0, 10), // Format as YYYY-MM-DD for date type in schema
+                returnDate: dropOff.toISOString().slice(0, 10), // Format as YYYY-MM-DD for date type in schema
+                totalAmount: totalCost,
+                // additionalRequests: additionalRequests || undefined, // Uncomment if you add this to CreateBookingPayload
             };
 
+            console.log('Booking payload:', bookingPayload);
+
             const res = await createBooking(bookingPayload).unwrap();
-            toast.success('Booking successful! Redirecting to payment...', { id: loadingToastId });
+            toast.success('Booking successful! Proceed to payment...', { id: loadingToastId });
 
             setTimeout(() => {
-                navigate(`/payment/${res.bookingId}`); 
+                navigate(`/payment/${res.bookingId}`);
             }, 2000);
         } catch (err: any) {
-            toast.error('Failed to create booking: ' + (err.data?.message || err.message || err.error || 'Unknown error'), { id: loadingToastId });
             console.error('Booking error:', err);
-        } finally {
-            toast.dismiss(loadingToastId);
+            const errorMessage = err.data?.error || 
+                                 err.data?.message || 
+                                 err.message || 
+                                 'Failed to create booking';
+            toast.error(errorMessage, { id: loadingToastId });
         }
     };
 
-    if (isLoading) {
+    if (isVehicleLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 w-full">
                 <span className="loading loading-spinner loading-lg text-purple-600"></span>
                 <p className="ml-4 text-lg text-purple-600">Loading vehicle details...</p>
             </div>
         );
-    }
-
-    if (error) {
+    } else if (vehicleError) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-red-50 text-red-700 p-4 w-full">
-                <p>Error loading vehicle details: {error instanceof Error ? error.message : 'An unknown error occurred'}</p>
+                <p>Error loading vehicle details: {vehicleError instanceof Error ? vehicleError.message : 'An unknown error occurred'}</p>
             </div>
         );
-    }
-
-    if (!vehicle) {
+    } else if (!vehicle) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-700 p-4 w-full">
                 <p>Vehicle not found.</p>
             </div>
         );
-    }
+    } else {
+        return (
+            <div className="min-h-screen w-full bg-gray-50">
+                <Toaster richColors position="top-right" />
 
-    return (
-        
-        <div className="min-h-screenw-full bg-gray-50 "> 
-            <Toaster richColors position="top-right" />
+                <div className="px-4 py-8">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="btn btn-ghost text-purple-600 mb-4"
+                    >
+                        <FaArrowLeft className="mr-2" /> Back to Vehicles
+                    </button>
 
-            <div className="px-4 py-8"> 
-                <button 
-                    onClick={() => navigate(-1)}
-                    className="btn btn-ghost text-purple-600 mb-4"
-                >
-                    <FaArrowLeft className="mr-2" /> Back to Vehicles
-                </button>
-
-                <div className="bg-white rounded-lg shadow-xl overflow-hidden md:flex">
-                    <div className="md:w-1/2">
-                        <img
-                            src={vehicle.imageUrl}
-                            alt={`${vehicle.vehicleSpec.manufacturer} ${vehicle.vehicleSpec.model}`}
-                            className="w-full h-96 object-cover"
-                        />
-                    </div>
-
-                    <div className="md:w-1/2 p-8">
-                        <h1 className="text-4xl font-extrabold text-purple-800 mb-2">
-                            {vehicle.vehicleSpec.manufacturer} {vehicle.vehicleSpec.model}
-                        </h1>
-                        <p className="text-gray-700 text-lg mb-4">{vehicle.description}</p>
-
-                        <div className="grid grid-cols-2 gap-y-3 text-gray-600 text-base mb-6">
-                            <div className="flex items-center gap-2">
-                                <FaCar className="text-purple-600" /> Manufacturer: {vehicle.vehicleSpec.manufacturer}
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <FaCar className="text-purple-600" /> Model: {vehicle.vehicleSpec.model}
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <FaChair className="text-purple-600" /> Seats: {vehicle.vehicleSpec.seatingCapacity}
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <FaGasPump className="text-purple-600" /> Fuel: {vehicle.vehicleSpec.fuelType}
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <FaCogs className="text-purple-600" /> Transmission: {vehicle.vehicleSpec.transmission}
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <FaDollarSign className="text-purple-600" /> Daily Rate: 
-                                <span className="text-2xl font-bold text-orange-600 ml-1">${vehicle.rentalRate}</span>
-                            </div>
-                            {vehicle.color && (
-                                <div className="flex items-center gap-2">
-                                    Color: {vehicle.color}
-                                </div>
-                            )}
-                            <div className="flex items-center gap-2 col-span-2">
-                                <span className={`badge ${vehicle.availability ? 'badge-success' : 'badge-error'} text-white`}>
-                                    {vehicle.availability ? 'Available for Rent' : 'Currently Unavailable'}
-                                </span>
-                            </div>
+                    <div className="bg-white rounded-lg shadow-xl overflow-hidden md:flex">
+                        <div className="md:w-1/2">
+                            <img
+                                src={vehicle.imageUrl}
+                                alt={`${vehicle.vehicleSpec.manufacturer} ${vehicle.vehicleSpec.model}`}
+                                className="w-full h-96 object-cover"
+                            />
                         </div>
 
-                        <form onSubmit={handleBookingSubmit} className="space-y-4 mt-6">
-                            <h3 className="text-2xl font-bold text-purple-800 mb-4">Book This Vehicle</h3>
+                        <div className="md:w-1/2 p-8">
+                            <h1 className="text-4xl font-extrabold text-purple-800 mb-2">
+                                {vehicle.vehicleSpec.manufacturer} {vehicle.vehicleSpec.model}
+                            </h1>
+                            <p className="text-gray-700 text-lg mb-4">{vehicle.description}</p>
 
-                            <div>
-                                <label htmlFor="pickupDateTime" className="block text-gray-700 text-sm font-semibold mb-2">Pick-up Date & Time</label>
-                                <input
-                                    type="datetime-local"
-                                    id="pickupDateTime"
-                                    className="input input-bordered w-full"
-                                    value={pickupDateTime}
-                                    onChange={(e) => setPickupDateTime(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="dropoffDateTime" className="block text-gray-700 text-sm font-semibold mb-2">Drop-off Date & Time</label>
-                                <input
-                                    type="datetime-local"
-                                    id="dropoffDateTime"
-                                    className="input input-bordered w-full"
-                                    value={dropoffDateTime}
-                                    onChange={(e) => setDropoffDateTime(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="text-xl font-bold text-right text-purple-800">
-                                Total Estimated Cost: <span className="text-orange-600">${totalCost.toFixed(2)}</span>
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="btn bg-orange-500 hover:bg-orange-600 text-white w-full mt-4"
-                                disabled={isBookingLoading || !vehicle.availability || totalCost <= 0}
-                            >
-                                {isBookingLoading ? (
-                                    <span className="loading loading-spinner"></span>
+                            <div className="grid grid-cols-2 gap-y-3 text-gray-600 text-base mb-6">
+                                <div className="flex items-center gap-2">
+                                    <FaCar className="text-purple-600" /> Manufacturer: {vehicle.vehicleSpec.manufacturer}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <FaCar className="text-purple-600" /> Model: {vehicle.vehicleSpec.model}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <FaChair className="text-purple-600" /> Seats: {vehicle.vehicleSpec.seatingCapacity}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <FaGasPump className="text-purple-600" /> Fuel: {vehicle.vehicleSpec.fuelType}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <FaCogs className="text-purple-600" /> Transmission: {vehicle.vehicleSpec.transmission}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <FaDollarSign className="text-purple-600" /> Daily Rate:
+                                    <span className="text-2xl font-bold text-orange-600 ml-1">${vehicle.rentalRate}</span>
+                                </div>
+                                {vehicle.color ? (
+                                    <div className="flex items-center gap-2">
+                                        Color: {vehicle.color}
+                                    </div>
                                 ) : (
-                                    'Book Now'
+                                    <div className="flex items-center gap-2">
+                                        Color: Not specified
+                                    </div>
                                 )}
-                            </button>
+                                <div className="flex items-center gap-2 col-span-2">
+                                    <span className={`badge ${vehicle.availability ? 'badge-success' : 'badge-error'} text-white`}>
+                                        {vehicle.availability ? 'Available for Rent' : 'Currently Unavailable'}
+                                    </span>
+                                </div>
+                            </div>
 
-                            {!isAuthenticated && (
-                                <p className="text-sm text-gray-500 text-center mt-2">
-                                    You must be <Link to="/login" className="text-blue-500 hover:underline">logged in</Link> to book a vehicle.
-                                </p>
-                            )}
-                        </form>
+                            <form onSubmit={handleBookingSubmit} className="space-y-4 mt-6">
+                                <h3 className="text-2xl font-bold text-purple-800 mb-4">Book This Vehicle</h3>
+
+                                {locations.length > 0 ? (
+                                    <div>
+                                        <label htmlFor="location" className="block text-gray-700 text-sm font-semibold mb-2">
+                                            <FaMapMarkerAlt className="inline mr-1" /> Pickup Location
+                                        </label>
+                                        <select
+                                            id="location"
+                                            className="select select-bordered w-full"
+                                            value={locationId || ''}
+                                            onChange={(e) => setLocationId(Number(e.target.value))}
+                                            required
+                                            disabled={isLocationsLoading}
+                                        >
+                                            {isLocationsLoading ? (
+                                                <option>Loading locations...</option>
+                                            ) : (
+                                                locations.map((location: LocationDetails) => ( // Added LocationDetails type here
+                                                    <option key={location.locationId} value={location.locationId}>
+                                                        {location.name} - {location.address}
+                                                    </option>
+                                                ))
+                                            )}
+                                        </select>
+                                    </div>
+                                ) : (
+                                    <div className="text-orange-600">
+                                        {isLocationsLoading ? 'Loading locations...' : 'No locations available'}
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label htmlFor="pickupDateTime" className="block text-gray-700 text-sm font-semibold mb-2">
+                                            Pick-up Date & Time
+                                        </label>
+                                        <input
+                                            type="datetime-local"
+                                            id="pickupDateTime"
+                                            className="input input-bordered w-full"
+                                            value={pickupDateTime}
+                                            onChange={(e) => setPickupDateTime(e.target.value)}
+                                            min={new Date().toISOString().slice(0, 16)}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="dropoffDateTime" className="block text-gray-700 text-sm font-semibold mb-2">
+                                            Drop-off Date & Time
+                                        </label>
+                                        <input
+                                            type="datetime-local"
+                                            id="dropoffDateTime"
+                                            className="input input-bordered w-full"
+                                            value={dropoffDateTime}
+                                            onChange={(e) => setDropoffDateTime(e.target.value)}
+                                            min={pickupDateTime || new Date().toISOString().slice(0, 16)}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="additionalRequests" className="block text-gray-700 text-sm font-semibold mb-2">
+                                        Additional Requests (Optional)
+                                    </label>
+                                    <textarea
+                                        id="additionalRequests"
+                                        className="textarea textarea-bordered w-full"
+                                        value={additionalRequests}
+                                        onChange={(e) => setAdditionalRequests(e.target.value)}
+                                        rows={3}
+                                        placeholder="Special instructions or requests..."
+                                    />
+                                </div>
+
+                                <div className="text-xl font-bold text-right text-purple-800">
+                                    Total Estimated Cost: <span className="text-orange-600">${totalCost.toFixed(2)}</span>
+                                </div>
+
+                                {vehicle.availability ? (
+                                    <button
+                                        type="submit"
+                                        className="btn bg-orange-500 hover:bg-orange-600 text-white w-full mt-4"
+                                        disabled={isBookingLoading || totalCost <= 0 || locationId === null}
+                                    >
+                                        {isBookingLoading ? (
+                                            <span className="loading loading-spinner"></span>
+                                        ) : (
+                                            'Book Now'
+                                        )}
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="btn btn-disabled w-full mt-4"
+                                        disabled
+                                    >
+                                        Currently Unavailable
+                                    </button>
+                                )}
+
+                                {!isAuthenticated ? (
+                                    <p className="text-sm text-gray-500 text-center mt-2">
+                                        You must be <Link to="/login" className="text-blue-500 hover:underline">logged in</Link> to book a vehicle.
+                                    </p>
+                                ) : (
+                                    <div className="text-sm text-gray-500 text-center mt-2">
+                                        Booking as: {user?.email}
+                                    </div>
+                                )}
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    }
 };
 
 export default VDetails;
