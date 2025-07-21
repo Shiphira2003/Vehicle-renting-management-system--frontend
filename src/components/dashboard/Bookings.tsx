@@ -44,7 +44,7 @@ const UserBookings = () => {
 
     return (
         <div className="min-h-screen bg-darkGray text-white p-6">
-            <h2 className="text-3xl font-bold text-center mb-8 text-accentPink">My Bookings</h2>
+            <h2 className="text-3xl font-bold text-center mb-8 text-blue-600">My Bookings</h2>
             <div className="overflow-x-auto">
                 <table className="table w-full bg-lightGray rounded-lg shadow-md">
                     <thead>

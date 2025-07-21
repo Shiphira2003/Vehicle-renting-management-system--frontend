@@ -34,7 +34,7 @@ export const bookingsApi = createApi({
         // ✅ Update booking
         updateBooking: builder.mutation<
             BookingDetails,
-            { bookingId: number; status?: "Pending" | "Confirmed" | "Completed" | "Cancelled"; [key: string]: any }
+            { bookingId: number; bookingStatus?: "Pending" | "Confirmed" | "Completed" | "Cancelled"; [key: string]: any }
         >({
             query: ({ bookingId, ...bookingUpdatePayload }) => ({
                 url: `bookings/${bookingId}`,

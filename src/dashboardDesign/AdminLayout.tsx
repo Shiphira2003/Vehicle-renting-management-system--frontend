@@ -1,14 +1,13 @@
 import { Outlet } from 'react-router-dom';
 import Card from './Card';
 import { AdminSideNav } from './AdminSidenav';
+import { Navbar } from '../components/Navbar';
 
 export const AdminLayout = () => {
   return (
     <div className="fixed top-0 left-0 w-screen h-screen flex flex-col overflow-hidden bg-gradient-to-br from-white to-purple-50">
-      {/* Navbar (full width) */}
-      <nav className="w-full bg-white shadow-sm p-4 z-10">
-      </nav>
-
+     
+      <Navbar/>
       {/* Content area (sidebar + main) */}
       <div className="flex flex-1 overflow-hidden">
         {/* Fixed Sidebar */}

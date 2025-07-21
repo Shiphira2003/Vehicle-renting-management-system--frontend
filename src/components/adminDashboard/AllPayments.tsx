@@ -1,5 +1,3 @@
-// src/components/AllPayments.tsx
-
 import { AiFillDelete } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
 import type { RootState } from "../../apps/store";
@@ -93,16 +91,16 @@ export const AllPayments = () => {
         <table className="table w-full text-left">
           <thead>
             <tr>
-              <th className="p-4">Payment ID</th>
-              <th className="p-4">Booking ID</th>
-              <th className="p-4">Amount</th>
-              <th className="p-4">Method</th>
-              <th className="p-4">Transaction ID</th>
-              <th className="p-4">Date</th>
-              <th className="p-4">Status</th>
-              <th className="p-4">Booked By</th>
-              <th className="p-4">Vehicle</th>
-              <th className="p-4">Actions</th>
+              <th className="p-4 text-purple-600">Payment ID</th>
+              <th className="p-4 text-purple-600">Booking ID</th>
+              <th className="p-4 text-purple-600">Amount</th>
+              <th className="p-4 text-purple-600">Method</th>
+              <th className="p-4 text-purple-600">Transaction ID</th>
+              <th className="p-4 text-purple-600">Date</th>
+              <th className="p-4 text-purple-600">Status</th>
+              <th className="p-4 text-purple-600">Booked By</th>
+              <th className="p-4 text-purple-600">Vehicle</th>
+              <th className="p-4 text-purple-600">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -116,12 +114,12 @@ export const AllPayments = () => {
               <tr>
                 <td colSpan={10} className="flex justify-center items-center py-8">
                   <PuffLoader color="#0aff13" size={60} />
-                  <span className="ml-4 text-gray-700">Loading payments...</span>
+                  <span className="ml-4 text-purple-700">Loading payments...</span>
                 </td>
               </tr>
             ) : paymentsData.length === 0 ? (
               <tr>
-                <td colSpan={10} className="text-center text-gray-600 py-8 text-lg">
+                <td colSpan={10} className="text-center text-red-600 py-8 text-lg">
                   No payments available 😎
                 </td>
               </tr>
@@ -129,10 +127,10 @@ export const AllPayments = () => {
               paymentsData.map((payment: PaymentDetails) => (
                 <tr
                   key={payment.paymentId}
-                  className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
+                  className="border-b border-gray-200 last:border-b-0 hover:bg-gray text-purple-50"
                 >
                   <th className="p-4 text-gray-700">{payment.paymentId}</th>
-                  <td className="p-4 text-purple-700 font-bold">
+                  <td className="p-4 text-gray-700 font-bold">
                     {payment.bookingId}
                   </td>
                   <td className="p-4 text-gray-700">Ksh {payment.amount}</td>
@@ -152,10 +150,10 @@ export const AllPayments = () => {
                   </td>
                   <td className="p-4">
                     <div className="font-bold text-gray-800">
-                      {payment.user.firstName} {payment.user.lastName}
+                      {payment.booking.user.firstName} {payment.booking.user.lastName}
                     </div>
                     <div className="text-sm opacity-50 text-gray-600">
-                      {payment.user.email}
+                      {payment.booking.user.email}
                     </div>
                   </td>
                   <td className="p-4">
@@ -163,7 +161,10 @@ export const AllPayments = () => {
                       <div className="avatar">
                         <div className="mask mask-squircle h-12 w-12 border-2 border-purple-400">
                           <img
-                            src={payment.booking.vehicle.vehicleSpec.imageUrl || "/default-car.png"}
+                            src={
+                              payment.booking.vehicle.vehicleSpec.imageUrl ||
+                              "/default-car.png"
+                            }
                             alt={`${payment.booking.vehicle.vehicleSpec.manufacturer} ${payment.booking.vehicle.vehicleSpec.model}`}
                             className="object-cover"
                           />

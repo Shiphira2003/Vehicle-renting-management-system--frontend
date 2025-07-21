@@ -20,6 +20,13 @@ export const AdminSideNav = () => {
                 </Link>
             </li>
 
+            <li>
+                <Link to="/admindashboard/allpayments" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">
+                    <Users className="text-orange-600 w-5 h-5" />
+                    <span className="text-gray-800 text-base">All Payments</span>
+                </Link>
+            </li>
+
             {/* All vehicles */}
             <li>
                 <Link to="/admindashboard/allvehicles" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">

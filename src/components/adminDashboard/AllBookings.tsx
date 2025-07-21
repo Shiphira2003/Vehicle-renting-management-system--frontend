@@ -42,7 +42,7 @@ export const AllBookings = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await updateBooking({ bookingId: bookingId, status: "Confirmed" }).unwrap();
+                    const res = await updateBooking({ bookingId: bookingId, bookingStatus: "Confirmed" }).unwrap();
                     console.log(res);
                     Swal.fire("Confirmed!", "Booking has been confirmed.", "success");
                 } catch (error) {
