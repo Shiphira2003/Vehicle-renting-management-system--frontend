@@ -139,6 +139,10 @@ function App() {
           element: <AllVehicles/>,
         },
         {
+          path: "vehicleimages",
+          element: <VehiclesImages/>,
+        },
+        {
           path: "allusers",
           element: <AllUsers/>,
         },

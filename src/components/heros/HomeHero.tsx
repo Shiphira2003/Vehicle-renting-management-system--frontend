@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import Image from '../../assets/home.jpg';
+import Image from '../../assets/purple car.jpg';
 
 const Hero = () => {
   const navigate = useNavigate();
 
   const handleServicesClick = () => {
-    navigate('/services'); // Make sure this matches your route path
+    navigate('/services');  
   };
 
   return (

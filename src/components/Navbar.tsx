@@ -31,7 +31,7 @@ export const Navbar = () => {
                     <div
                         tabIndex={0}
                         role="button"
-                        className="btn btn-ghost lg:hidden hover:bg-purple-700"
+                        className="btn btn-ghost lg:hidden hover:bg-purple-400"
                         onClick={toggleMenu}
                     >
                         <svg
